@@ -224,7 +224,7 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    let currentUser = null, isAdmin = false;
+    let currentUser = null, isAdmin = false, isEditMode = false; // เพิ่ม isEditMode เพื่อเช็คการแก้ไข
 
     window.loginGoogle = () => signInWithPopup(auth, provider);
     window.loginEmail = () => {
@@ -254,8 +254,15 @@
     });
 
     window.saveToFirebase = async function() {
-        let name = document.getElementById('menuName').value;
+        let nameField = document.getElementById('menuName');
+        let name = nameField.value;
         if(!name || window.recipeData.length === 0) return alert("ระบุชื่อเมนูและใส่สูตรก่อน");
+        
+        // ถ้าอยู่ในโหมดแก้ไข และชื่อยังไม่มีคำว่า (แก้ไข) ให้เติมต่อท้าย
+        if(isEditMode && !name.includes("(แก้ไข)")) {
+            name = name + " (แก้ไข)";
+        }
+
         document.getElementById('statusMsg').innerText = "⏳ กำลังบันทึก...";
         document.getElementById('statusMsg').style.color = "var(--primary)";
         try {
@@ -269,6 +276,7 @@
             });
             document.getElementById('statusMsg').innerText = "✅ บันทึกสำเร็จ!";
             document.getElementById('statusMsg').style.color = "#2E7D32";
+            isEditMode = false; // บันทึกเสร็จแล้ว รีเซ็ตโหมดแก้ไข
             setTimeout(() => document.getElementById('statusMsg').innerText = "", 3000);
         } catch (e) { alert(e.message); }
     };
@@ -302,13 +310,14 @@
     window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
     
     window.loadForEdit = (data) => {
+        isEditMode = true; // เข้าสู่โหมดแก้ไข
         if (data.stockRef) window.stockData = data.stockRef;
         window.recipeData = data.ingredients;
         document.getElementById('menuName').value = data.menu;
         renderStockTable();
         renderRecipeTable();
         openTab('calculator');
-        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว");
+        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว (เมื่อบันทึกใหม่จะระบุว่าเป็นรายการแก้ไข)");
     };
 </script>
 
