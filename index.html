@@ -8,94 +8,85 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; }
+        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
-        .container { max-width: 950px; margin: 0 auto; position: relative; }
+        .container { max-width: 1000px; margin: 0 auto; position: relative; }
         
-        /* Mini Logo at Corner */
-        .corner-logo { position: absolute; top: -5px; left: 0; display: flex; align-items: center; gap: 10px; text-decoration: none; }
-        .corner-logo img { width: 45px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .corner-logo span { font-weight: bold; color: var(--primary); font-size: 1.1em; }
-
-        /* Auth UI Box */
-        .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 15px; border-radius: 15px; margin-bottom: 20px; margin-top: 50px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
+        /* Auth Bar with Logo Integration */
+        .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 12px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
         .user-info { display: flex; justify-content: space-between; align-items: center; }
-        .user-details { display: flex; align-items: center; gap: 10px; }
+        .user-details { display: flex; align-items: center; gap: 15px; }
+        
+        /* Logo in User Bar */
+        .bar-logo { width: 40px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
         
         .login-box { max-width: 350px; margin: 0 auto; text-align: center; }
-        .login-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; }
-        .btn-google { background: #fff; border: 1px solid #ddd; width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; margin-bottom: 10px; }
-        .btn-email { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 48%; }
-        .btn-register { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 10px 20px; border-radius: 8px; cursor: pointer; width: 48%; }
+        .login-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #D7CCC8; border-radius: 8px; }
+        .btn-google { background: #fff; border: 1px solid #ddd; width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85em; }
 
-        /* Tabs & Content */
-        .tab-menu { display: flex; gap: 5px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 12px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); transition: 0.3s; }
-        .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Tabs */
+        .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); }
+        .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tab-content.active { display: block; }
 
         /* Cards & Tables */
-        .card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid rgba(215, 204, 200, 0.2); }
-        h2 { color: var(--primary); font-size: 1.2em; margin-top: 0; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; }
+        .card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        h2 { color: var(--primary); font-size: 1.2em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; }
         
         .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun'; }
-        .action-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; height: 42px; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95em; }
-        th { background: #F5F5F5; color: var(--secondary); padding: 12px; text-align: left; border-bottom: 2px solid #EFEBE9; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; }
+        
+        /* Large Menu Name Input */
+        .menu-name-input { flex-grow: 1; min-width: 300px; font-size: 1.1em; border: 2px solid var(--accent) !important; }
+        
+        .action-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #F5F5F5; padding: 12px; text-align: left; }
         td { padding: 12px; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
         
         .highlight { color: #795548; font-weight: bold; }
-        .total-box { background: #FFF3E0; padding: 20px; border-radius: 12px; text-align: right; margin-top: 15px; border: 1px solid #FFE0B2; }
+        .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; text-align: right; margin-top: 15px; }
+        .total-price { font-size: 2.2em; font-weight: bold; color: var(--primary); }
         
-        /* History Detail Styles */
         .ing-list { margin: 0; padding: 0; list-style: none; font-size: 0.85em; color: #6D4C41; }
-        .ing-list li { padding: 2px 0; border-bottom: 1px dashed #EFEBE9; }
-        .ing-list li:last-child { border: none; }
-        
-        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
-        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 0.8em; }
+        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; }
+        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; }
 
         .hidden { display: none !important; }
-        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr 1fr; } .action-btn { grid-column: span 2; } }
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } .menu-name-input { min-width: 100%; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    
-    <a href="#" class="corner-logo">
-        <img src="พักกล่อง.png" alt="Logo">
-        <span>พักกล่อง</span>
-    </a>
-
     <div class="auth-bar">
         <div id="loginSection">
             <div class="login-box">
+                <img src="พักกล่อง.png" style="width: 80px; margin-bottom: 10px;">
                 <button onclick="loginGoogle()" class="btn-google">
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="16"> เข้าด้วย Google
                 </button>
-                <div style="margin-bottom: 10px; font-size: 0.8em; color: #888;">หรือ</div>
+                <div style="margin: 10px 0; font-size: 0.8em; color: #888;">หรือใช้งานอีเมล</div>
                 <input type="email" id="email" class="login-input" placeholder="อีเมล">
                 <input type="password" id="password" class="login-input" placeholder="รหัสผ่าน">
-                <div style="display:flex; justify-content:space-between;">
-                    <button onclick="loginEmail()" class="btn-email">เข้าสู่ระบบ</button>
-                    <button onclick="registerEmail()" class="btn-register">สมัครสมาชิก</button>
+                <div style="display:flex; justify-content:space-between; gap:10px;">
+                    <button onclick="loginEmail()" class="action-btn" style="flex:1;">เข้าสู่ระบบ</button>
+                    <button onclick="registerEmail()" class="action-btn" style="flex:1; background:transparent; color:var(--primary); border:1px solid var(--primary);">สมัครสมาชิก</button>
                 </div>
             </div>
         </div>
 
         <div id="userInfo" class="user-info hidden">
             <div class="user-details">
+                <img src="พักกล่อง.png" class="bar-logo" alt="พักกล่อง">
                 <img id="userImg" src="" class="user-img">
                 <div>
-                    <span id="userName" style="font-weight:bold;"></span>
-                    <span id="roleBadge" style="font-size:0.7em; padding:2px 8px; border-radius:10px; margin-left:5px; color:white;"></span>
+                    <span id="userName" style="font-weight:bold; color:var(--primary);"></span>
+                    <span id="roleBadge" style="font-size:0.75em; padding:3px 10px; border-radius:12px; margin-left:5px; color:white; font-weight:bold;"></span>
                 </div>
             </div>
             <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
@@ -110,7 +101,7 @@
 
         <div id="calculator" class="tab-content active">
             <div class="card">
-                <h2>1. ลงสต็อกวัตถุดิบ</h2>
+                <h2>1. ลงสต็อกวัตถุดิบ (Stock)</h2>
                 <div class="input-group">
                     <div><input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ"></div>
                     <div><input type="number" id="stockPrice" placeholder="ราคา"></div>
@@ -125,7 +116,7 @@
             </div>
 
             <div class="card">
-                <h2>2. ผสมสูตรเมนู</h2>
+                <h2>2. ผสมสูตรเมนู (Recipe)</h2>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
                     <div style="flex: 2;"><label style="font-size: 0.8em;">เลือกวัตถุดิบ</label><select id="selectIngredient"></select></div>
                     <div style="flex: 1;"><label style="font-size: 0.8em;">ปริมาณใช้</label><input type="number" id="useQty"></div>
@@ -136,13 +127,13 @@
                     <tbody id="recipeTable"></tbody>
                 </table>
                 <div class="total-box">
-                    <div style="color: var(--secondary); font-size: 0.9em;">ต้นทุนรวม</div>
-                    <div style="font-size: 2em; font-weight: bold; color: var(--primary);" id="grandTotal">0.00</div>
-                    <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end;">
-                        <input type="text" id="menuName" placeholder="ชื่อเมนู" style="width: 180px;">
-                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32;">บันทึกสูตรนี้</button>
+                    <div style="color: var(--secondary); font-size: 1em;">ต้นทุนรวมทั้งหมด</div>
+                    <div class="total-price" id="grandTotal">0.00</div>
+                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
+                        <input type="text" id="menuName" class="menu-name-input" placeholder="ใส่ชื่อเมนู (เช่น: บราวนี่ถาด 8x8 นิ้ว)">
+                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32; height: 45px; padding: 0 25px;">💾 บันทึกสูตร</button>
                     </div>
-                    <p id="statusMsg" style="font-size: 0.8em; color: green;"></p>
+                    <p id="statusMsg" style="font-size: 0.9em; margin-top:10px;"></p>
                 </div>
             </div>
         </div>
@@ -150,16 +141,16 @@
         <div id="history" class="tab-content">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2 style="border:none; margin:0;">📋 ประวัติและรายละเอียดสูตร</h2>
-                    <button onclick="loadHistoryFromFirebase()" class="action-btn" style="height:auto; padding:5px 15px; font-size:0.8em; background:var(--accent);"><i class="fas fa-sync"></i> รีเฟรช</button>
+                    <h2 style="border:none; margin:0;">📋 ประวัติการคำนวณ</h2>
+                    <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> รีเฟรช</button>
                 </div>
-                <table style="font-size: 0.9em;">
+                <table>
                     <thead>
                         <tr>
-                            <th style="width: 15%;">วันที่</th>
+                            <th style="width: 20%;">วันที่/เวลา</th>
                             <th style="width: 20%;">เมนู</th>
-                            <th style="width: 40%;">รายละเอียดวัตถุดิบ</th>
-                            <th style="width: 15%; text-align:right;">ต้นทุนรวม</th>
+                            <th style="width: 35%;">รายละเอียดวัตถุดิบ</th>
+                            <th style="width: 15%; text-align:right;">ต้นทุน</th>
                             <th style="width: 10%; text-align:center;">Admin</th>
                         </tr>
                     </thead>
@@ -213,8 +204,8 @@
             document.getElementById('userImg').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`;
             document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
             let badge = document.getElementById('roleBadge');
-            badge.innerText = isAdmin ? "Admin" : "Member";
-            badge.style.background = isAdmin ? "#D32F2F" : "#FFA000";
+            badge.innerText = isAdmin ? "ผู้ดูแลระบบ (Admin)" : "สมาชิกทั่วไป";
+            badge.style.background = isAdmin ? "#D32F2F" : "var(--yellow)";
             renderStockTable();
         }
     });
@@ -228,6 +219,7 @@
                 menu: name,
                 cost: parseFloat(document.getElementById('grandTotal').innerText),
                 ingredients: window.recipeData,
+                stockRef: window.stockData,
                 date: Timestamp.now(),
                 savedBy: currentUser.email
             });
@@ -245,22 +237,20 @@
             tb.innerHTML = '';
             snap.forEach(d => {
                 let item = d.data();
-                let dateStr = item.date.toDate().toLocaleDateString('th-TH');
+                // Date + Time format
+                let dateObj = item.date.toDate();
+                let dateStr = dateObj.toLocaleDateString('th-TH') + ' ' + dateObj.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
                 
-                // สร้างรายการวัตถุดิบแบบละเอียด
                 let ingHtml = '<ul class="ing-list">';
                 item.ingredients.forEach(ing => {
-                    ingHtml += `<li>• ${ing.name}: ${ing.useQty} ${ing.unit} (${ing.cost.toFixed(2)} บ.)</li>`;
+                    ingHtml += `<li>• ${ing.name}: ${ing.useQty} ${ing.unit}</li>`;
                 });
                 ingHtml += '</ul>';
 
-                let adminTools = isAdmin ? `
-                    <button onclick='loadForEdit(${JSON.stringify(item)})' class="edit-btn">ดึงแก้</button>
-                    <button onclick="deleteHistory('${d.id}')" class="delete-btn">ลบ</button>
-                ` : '-';
+                let adminTools = isAdmin ? `<button onclick='loadForEdit(${JSON.stringify(item)})' class="edit-btn">แก้</button> <button onclick="deleteHistory('${d.id}')" class="delete-btn">ลบ</button>` : '-';
 
                 tb.innerHTML += `<tr>
-                    <td style="font-size:0.8em; color:#888;">${dateStr}</td>
+                    <td style="font-size:0.85em; color:#666;">${dateStr}</td>
                     <td class="highlight">${item.menu}</td>
                     <td>${ingHtml}</td>
                     <td style="text-align:right; font-weight:bold; color:green;">${item.cost.toFixed(2)}</td>
@@ -270,32 +260,36 @@
         } catch (e) { tb.innerHTML = 'Error'; }
     };
 
-    window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
+    window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
+    
     window.loadForEdit = (data) => {
+        if (data.stockRef) window.stockData = data.stockRef;
         window.recipeData = data.ingredients;
         document.getElementById('menuName').value = data.menu;
-        openTab('calculator');
+        renderStockTable();
         renderRecipeTable();
+        openTab('calculator');
+        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว");
     };
 </script>
 
 <script>
-    let stockData = []; window.recipeData = [];
+    window.stockData = []; window.recipeData = [];
     let eSIdx = -1, eRIdx = -1;
 
     function openTab(name) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(name).classList.add('active');
-        event.currentTarget.classList.add('active');
+        if (event && event.currentTarget) event.currentTarget.classList.add('active');
         if(name === 'history') loadHistoryFromFirebase();
     }
 
     function addStock() {
         let n = document.getElementById('stockName').value, p = parseFloat(document.getElementById('stockPrice').value), q = parseFloat(document.getElementById('stockQty').value), u = document.getElementById('stockUnit').value;
         if(n && p && q) {
-            if(eSIdx > -1) { stockData[eSIdx] = {name:n, price:p, qty:q, unit:u, cp:p/q}; eSIdx = -1; document.getElementById('addStockBtn').innerHTML = '<i class="fas fa-plus"></i>'; }
-            else { stockData.push({name:n, price:p, qty:q, unit:u, cp:p/q}); }
+            if(eSIdx > -1) { window.stockData[eSIdx] = {name:n, price:p, qty:q, unit:u, cp:p/q}; eSIdx = -1; document.getElementById('addStockBtn').innerHTML = '<i class="fas fa-plus"></i>'; }
+            else { window.stockData.push({name:n, price:p, qty:q, unit:u, cp:p/q}); }
             renderStockTable();
             ['stockName','stockPrice','stockQty','stockUnit'].forEach(i => document.getElementById(i).value = '');
         }
@@ -304,14 +298,14 @@
     function renderStockTable() {
         let tb = document.getElementById('stockTable'), sel = document.getElementById('selectIngredient');
         tb.innerHTML = ''; sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
-        stockData.forEach((s, i) => {
+        window.stockData.forEach((s, i) => {
             tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty} ${s.unit}</td><td class="highlight">${s.cp.toFixed(4)}</td><td><button class="edit-btn" onclick="editStock(${i})">แก้</button></td></tr>`;
             sel.innerHTML += `<option value="${i}">${s.name}</option>`;
         });
     }
 
     window.editStock = (i) => {
-        let s = stockData[i]; eSIdx = i;
+        let s = window.stockData[i]; eSIdx = i;
         document.getElementById('stockName').value = s.name; document.getElementById('stockPrice').value = s.price; document.getElementById('stockQty').value = s.qty; document.getElementById('stockUnit').value = s.unit;
         document.getElementById('addStockBtn').innerText = 'บันทึก';
     };
@@ -319,7 +313,7 @@
     function addToRecipe() {
         let idx = document.getElementById('selectIngredient').value, qty = parseFloat(document.getElementById('useQty').value);
         if(idx !== "" && qty > 0) {
-            let s = stockData[idx];
+            let s = window.stockData[idx];
             if(eRIdx > -1) { window.recipeData[eRIdx] = {name:s.name, useQty:qty, unit:s.unit, cost:s.cp*qty}; eRIdx = -1; document.getElementById('addRecipeBtn').innerText = '+ ใส่สูตร'; }
             else { window.recipeData.push({name:s.name, useQty:qty, unit:s.unit, cost:s.cp*qty}); }
             renderRecipeTable();
