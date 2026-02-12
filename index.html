@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พักกล่อง - ระบบคำนวณต้นทุน</title>
+    <title>พักกล่อง - ระบบคำนวณต้นทุน (Pro Version)</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -12,36 +12,78 @@
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
         .container { max-width: 1000px; margin: 0 auto; position: relative; }
         
-        /* Auth Bar with Logo Integration */
-        .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 12px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
-        .user-info { display: flex; justify-content: space-between; align-items: center; }
-        .user-details { display: flex; align-items: center; gap: 15px; }
+        /* --- 1. ปรับแต่งแถบด้านบน (User Bar) ใหม่ --- */
+        .auth-bar {
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFECB3 100%); 
+            padding: 10px 25px;
+            border-radius: 50px; 
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #FFE082;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .user-details {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bar-logo {
+            width: 45px;
+            height: auto;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
         
-        /* Logo in User Bar */
-        .bar-logo { width: 40px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
-        .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
-        
+        .bar-logo:hover { transform: scale(1.1); }
+
+        .user-img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        #roleBadge {
+            font-size: 0.7em;
+            padding: 4px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* ---------------------------------- */
+
         .login-box { max-width: 350px; margin: 0 auto; text-align: center; }
         .login-input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #D7CCC8; border-radius: 8px; }
         .btn-google { background: #fff; border: 1px solid #ddd; width: 100%; padding: 8px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
-        .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85em; }
+        .btn-logout { background: white; border: 1px solid #FFCDD2; color: #C62828; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; font-weight: bold; transition: 0.3s; }
+        .btn-logout:hover { background: #FFEBEE; }
 
-        /* Tabs */
         .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 12px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Cards & Tables */
         .card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         h2 { color: var(--primary); font-size: 1.2em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; }
         
         .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
         input, select { width: 100%; padding: 10px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; }
-        
-        /* Large Menu Name Input */
-        .menu-name-input { flex-grow: 1; min-width: 300px; font-size: 1.1em; border: 2px solid var(--accent) !important; }
         
         .action-btn { background: var(--primary); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
@@ -49,15 +91,70 @@
         td { padding: 12px; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
         
         .highlight { color: #795548; font-weight: bold; }
-        .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; text-align: right; margin-top: 15px; }
-        .total-price { font-size: 2.2em; font-weight: bold; color: var(--primary); }
+
+        /* --- 2. ปรับแต่งส่วนบันทึกสูตรด้านล่าง ใหม่ --- */
+        .total-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px dashed #FFCC80; 
+            margin-top: 30px;
+        }
+
+        .menu-name-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .menu-name-input {
+            flex: 1;
+            height: 50px;
+            padding: 0 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            outline: none;
+        }
+
+        .menu-name-input:focus {
+            border-color: #FFA000;
+            box-shadow: 0 0 0 4px rgba(255, 160, 0, 0.1);
+            background-color: #FFFDE7;
+        }
+
+        .save-btn {
+            background: #2E7D32;
+            color: white;
+            height: 50px;
+            padding: 0 30px;
+            border-radius: 12px;
+            border: none;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.2);
+        }
+
+        .save-btn:hover {
+            background: #1B5E20;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46, 125, 50, 0.3);
+        }
+
+        /* ---------------------------------- */
         
         .ing-list { margin: 0; padding: 0; list-style: none; font-size: 0.85em; color: #6D4C41; }
         .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; }
         .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 4px 10px; border-radius: 5px; cursor: pointer; }
 
         .hidden { display: none !important; }
-        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } .menu-name-input { min-width: 100%; } }
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } .menu-name-group { flex-direction: column; } .save-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -66,30 +163,31 @@
     <div class="auth-bar">
         <div id="loginSection">
             <div class="login-box">
-                <img src="พักกล่อง.png" style="width: 80px; margin-bottom: 10px;">
+                <img src="พักกล่อง.png" style="width: 60px; margin-bottom: 10px;">
                 <button onclick="loginGoogle()" class="btn-google">
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg" width="16"> เข้าด้วย Google
                 </button>
-                <div style="margin: 10px 0; font-size: 0.8em; color: #888;">หรือใช้งานอีเมล</div>
+                <div style="margin: 8px 0; font-size: 0.8em; color: #888;">หรือ</div>
                 <input type="email" id="email" class="login-input" placeholder="อีเมล">
                 <input type="password" id="password" class="login-input" placeholder="รหัสผ่าน">
-                <div style="display:flex; justify-content:space-between; gap:10px;">
+                <div style="display:flex; gap:10px;">
                     <button onclick="loginEmail()" class="action-btn" style="flex:1;">เข้าสู่ระบบ</button>
-                    <button onclick="registerEmail()" class="action-btn" style="flex:1; background:transparent; color:var(--primary); border:1px solid var(--primary);">สมัครสมาชิก</button>
+                    <button onclick="registerEmail()" class="action-btn" style="flex:1; background:transparent; color:var(--primary); border:1px solid var(--primary);">สมัคร</button>
                 </div>
             </div>
         </div>
 
         <div id="userInfo" class="user-info hidden">
             <div class="user-details">
-                <img src="พักกล่อง.png" class="bar-logo" alt="พักกล่อง">
+                <img src="พักกล่อง.png" class="bar-logo" alt="Logo">
+                <div style="width: 1px; height: 25px; background: #FFD54F; margin: 0 5px;"></div>
                 <img id="userImg" src="" class="user-img">
                 <div>
-                    <span id="userName" style="font-weight:bold; color:var(--primary);"></span>
-                    <span id="roleBadge" style="font-size:0.75em; padding:3px 10px; border-radius:12px; margin-left:5px; color:white; font-weight:bold;"></span>
+                    <div id="userName" style="font-weight:700; color:#5D4037; font-size: 0.95em; line-height: 1.2;"></div>
+                    <span id="roleBadge"></span>
                 </div>
             </div>
-            <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
+            <button onclick="logout()" class="btn-logout"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</button>
         </div>
     </div>
 
@@ -101,9 +199,9 @@
 
         <div id="calculator" class="tab-content active">
             <div class="card">
-                <h2>1. ลงสต็อกวัตถุดิบ (Stock)</h2>
+                <h2>1. ลงทะเบียนวัตถุดิบ (Stock)</h2>
                 <div class="input-group">
-                    <div><input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ"></div>
+                    <div><input type="text" id="stockName" placeholder="เช่น น้ำตาลทราย"></div>
                     <div><input type="number" id="stockPrice" placeholder="ราคา"></div>
                     <div><input type="number" id="stockQty" placeholder="ปริมาณ"></div>
                     <div><input type="text" id="stockUnit" placeholder="หน่วย"></div>
@@ -116,7 +214,7 @@
             </div>
 
             <div class="card">
-                <h2>2. ผสมสูตรเมนู (Recipe)</h2>
+                <h2>2. คำนวณสูตร (Recipe)</h2>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
                     <div style="flex: 2;"><label style="font-size: 0.8em;">เลือกวัตถุดิบ</label><select id="selectIngredient"></select></div>
                     <div style="flex: 1;"><label style="font-size: 0.8em;">ปริมาณใช้</label><input type="number" id="useQty"></div>
@@ -126,14 +224,23 @@
                     <thead><tr><th>รายการ</th><th>ใช้ไป</th><th>ต้นทุนจริง</th><th>จัดการ</th></tr></thead>
                     <tbody id="recipeTable"></tbody>
                 </table>
+
                 <div class="total-box">
-                    <div style="color: var(--secondary); font-size: 1em;">ต้นทุนรวมทั้งหมด</div>
-                    <div class="total-price" id="grandTotal">0.00</div>
-                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
-                        <input type="text" id="menuName" class="menu-name-input" placeholder="ใส่ชื่อเมนู (เช่น: บราวนี่ถาด 8x8 นิ้ว)">
-                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32; height: 45px; padding: 0 25px;">💾 บันทึกสูตร</button>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px;">
+                        <div style="text-align: left;">
+                            <span style="color: #8D6E63; font-size: 0.9em; font-weight: bold;">ยอดรวมต้นทุน</span>
+                            <div style="color: #5D4037; font-size: 1.2em; font-weight: 300;">คำนวณจากสูตรด้านบน</div>
+                        </div>
+                        <div style="font-size: 3em; line-height: 1; font-weight: bold; color: var(--primary);" id="grandTotal">0.00</div>
                     </div>
-                    <p id="statusMsg" style="font-size: 0.9em; margin-top:10px;"></p>
+                    
+                    <div class="menu-name-group">
+                        <input type="text" id="menuName" class="menu-name-input" placeholder="ตั้งชื่อเมนู (เช่น: บราวนี่ถาด 8x8 นิ้ว)">
+                        <button onclick="saveToFirebase()" class="save-btn">
+                            <i class="fas fa-cloud-upload-alt"></i> บันทึกสูตรลงระบบ
+                        </button>
+                    </div>
+                    <p id="statusMsg" style="text-align: left; margin-top: 10px; font-weight: bold;"></p>
                 </div>
             </div>
         </div>
@@ -141,15 +248,15 @@
         <div id="history" class="tab-content">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2 style="border:none; margin:0;">📋 ประวัติการคำนวณ</h2>
+                    <h2>📋 ประวัติการคำนวณ</h2>
                     <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> รีเฟรช</button>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">วันที่/เวลา</th>
-                            <th style="width: 20%;">เมนู</th>
-                            <th style="width: 35%;">รายละเอียดวัตถุดิบ</th>
+                            <th style="width: 18%;">วันที่/เวลา</th>
+                            <th style="width: 22%;">เมนู</th>
+                            <th style="width: 35%;">วัตถุดิบ</th>
                             <th style="width: 15%; text-align:right;">ต้นทุน</th>
                             <th style="width: 10%; text-align:center;">Admin</th>
                         </tr>
@@ -204,7 +311,7 @@
             document.getElementById('userImg').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`;
             document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
             let badge = document.getElementById('roleBadge');
-            badge.innerText = isAdmin ? "ผู้ดูแลระบบ (Admin)" : "สมาชิกทั่วไป";
+            badge.innerText = isAdmin ? "ADMIN" : "MEMBER";
             badge.style.background = isAdmin ? "#D32F2F" : "var(--yellow)";
             renderStockTable();
         }
@@ -237,16 +344,11 @@
             tb.innerHTML = '';
             snap.forEach(d => {
                 let item = d.data();
-                // Date + Time format
                 let dateObj = item.date.toDate();
                 let dateStr = dateObj.toLocaleDateString('th-TH') + ' ' + dateObj.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
-                
                 let ingHtml = '<ul class="ing-list">';
-                item.ingredients.forEach(ing => {
-                    ingHtml += `<li>• ${ing.name}: ${ing.useQty} ${ing.unit}</li>`;
-                });
+                item.ingredients.forEach(ing => { ingHtml += `<li>• ${ing.name}: ${ing.useQty} ${ing.unit}</li>`; });
                 ingHtml += '</ul>';
-
                 let adminTools = isAdmin ? `<button onclick='loadForEdit(${JSON.stringify(item)})' class="edit-btn">แก้</button> <button onclick="deleteHistory('${d.id}')" class="delete-btn">ลบ</button>` : '-';
 
                 tb.innerHTML += `<tr>
@@ -261,7 +363,6 @@
     };
 
     window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
-    
     window.loadForEdit = (data) => {
         if (data.stockRef) window.stockData = data.stockRef;
         window.recipeData = data.ingredients;
@@ -269,7 +370,6 @@
         renderStockTable();
         renderRecipeTable();
         openTab('calculator');
-        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว");
     };
 </script>
 
