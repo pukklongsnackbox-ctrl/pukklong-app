@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบคำนวณต้นทุน - พักกล่อง (Firebase Version)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #F9FBE7; --white: #ffffff; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #444; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        /* Tabs */
+        .tab-menu { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: #ddd; border-radius: 10px 10px 0 0; cursor: pointer; font-size: 1.1em; font-weight: bold; color: #666; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; transform: translateY(-5px); box-shadow: 0 -5px 10px rgba(0,0,0,0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Card & Input */
+        .card { background: var(--white); padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.1); margin-bottom: 25px; }
+        h2 { color: var(--primary); border-bottom: 2px dashed #eee; padding-bottom: 10px; margin-top: 0; }
+        .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
+        .recipe-group { display: grid; grid-template-columns: 3fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
+        label { font-size: 0.85em; color: var(--secondary); display: block; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; height: 42px; }
+        button:hover { background: var(--secondary); }
+        button.delete { background: #e57373; padding: 5px 10px; height: auto; font-size: 0.8em; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background: var(--secondary); color: white; padding: 10px; text-align: left; }
+        td { border-bottom: 1px solid #eee; padding: 10px; vertical-align: top; }
+        .highlight { color: var(--primary); font-weight: bold; }
+        .total-box { background: #EFEBE9; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: right; }
+        .total-price { font-size: 2em; color: var(--primary); font-weight: bold; }
+        
+        /* History Detail */
+        .detail-list { list-style: none; padding: 0; margin: 0; font-size: 0.85em; color: #555; }
+        .detail-list li { margin-bottom: 4px; border-bottom: 1px dotted #ccc; padding-bottom: 2px; }
+        .detail-badge { background: #eee; padding: 2px 5px; border-radius: 4px; font-size: 0.8em; color: #777; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 style="text-align: center; color: var(--primary);">🤎 พักกล่อง Manager (Speed)</h1>
+
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="openTab('calculator')"><i class="fas fa-calculator"></i> คำนวณต้นทุน</button>
+        <button class="tab-btn" onclick="openTab('history')"><i class="fas fa-history"></i> ประวัติและสูตร</button>
+    </div>
+
+    <div id="calculator" class="tab-content active">
+        <div class="card">
+            <h2>1. ลงทะเบียนวัตถุดิบ (Stock)</h2>
+            <div class="input-group">
+                <div><label>ชื่อวัตถุดิบ</label><input type="text" id="stockName" placeholder="เช่น น้ำตาลทราย"></div>
+                <div><label>ราคาซื้อ (บาท)</label><input type="number" id="stockPrice" placeholder="24"></div>
+                <div><label>ปริมาณที่ซื้อ</label><input type="number" id="stockQty" placeholder="1000"></div>
+                <div><label>หน่วยนับ</label><input type="text" id="stockUnit" placeholder="กรัม"></div>
+                <button onclick="addStock()"><i class="fas fa-plus"></i></button>
+            </div>
+            <table>
+                <thead><tr><th>วัตถุดิบ</th><th>ซื้อมา</th><th>ต้นทุนต่อหน่วย</th><th>ลบ</th></tr></thead>
+                <tbody id="stockTable"></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>2. คำนวณสูตร (Recipe)</h2>
+            <div class="recipe-group">
+                <div><label>เลือกวัตถุดิบ</label><select id="selectIngredient"><option value="">-- เลือก --</option></select></div>
+                <div><label>ปริมาณที่ใช้จริง</label><input type="number" id="useQty" placeholder="ระบุจำนวน"></div>
+                <button onclick="addToRecipe()">ใส่สูตร</button>
+            </div>
+            <table>
+                <thead><tr><th>วัตถุดิบในเมนู</th><th>ปริมาณใช้</th><th>ต้นทุนจริง (บาท)</th><th>ลบ</th></tr></thead>
+                <tbody id="recipeTable"></tbody>
+            </table>
+            <div class="total-box">
+                ต้นทุนรวม: <span class="total-price" id="grandTotal">0.00</span> บาท
+                <hr>
+                <div style="display:flex; gap:10px; justify-content:flex-end; align-items:center;">
+                    <input type="text" id="menuName" placeholder="ตั้งชื่อเมนู (เช่น Set A)" style="width:250px;">
+                    <button onclick="saveToFirebase()" style="background:#2E7D32;"><i class="fas fa-save"></i> บันทึกลง Firebase</button>
+                </div>
+                <p id="statusMsg" style="color:green; font-weight:bold; margin-top:5px;"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="history" class="tab-content">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2>📋 ประวัติการคำนวณ (จาก Firebase)</h2>
+                <button onclick="loadHistoryFromFirebase()" style="background:var(--secondary); height: auto; padding: 8px 15px;"><i class="fas fa-sync"></i> รีเฟรช</button>
+            </div>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width: 15%">วันที่</th>
+                        <th style="width: 20%">ชื่อเมนู</th>
+                        <th>รายละเอียดวัตถุดิบ</th>
+                        <th style="width: 15%; text-align:right;">ต้นทุนรวม</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable">
+                    <tr><td colspan="4" style="text-align:center;">กดปุ่มรีเฟรชเพื่อดูข้อมูล...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Import Functions
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, Timestamp } 
+    from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // ------------------------------------------------------------------
+    // ✅ ใส่ Config ของคุณเรียบร้อยแล้ว
+    // ------------------------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6WhTPgvLbd0SfgbQx0B3ktoUl8VYlbXQ",
+      authDomain: "pukklong-cost.firebaseapp.com",
+      projectId: "pukklong-cost",
+      storageBucket: "pukklong-cost.firebasestorage.app",
+      messagingSenderId: "281170763995",
+      appId: "1:281170763995:web:fe17a33631e9bb07c76cfe"
+    };
+
+    // เริ่มต้นระบบ Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ฟังก์ชันบันทึก
+    window.saveToFirebase = async function() {
+        let menuName = document.getElementById('menuName').value;
+        let totalCost = document.getElementById('grandTotal').innerText;
+        let statusBtn = document.getElementById('statusMsg');
+
+        if(!menuName) return alert("กรุณาตั้งชื่อเมนูก่อน");
+
+        statusBtn.innerText = "⏳ กำลังบันทึก...";
+        
+        try {
+            await addDoc(collection(db, "history"), {
+                menu: menuName,
+                cost: parseFloat(totalCost),
+                ingredients: window.recipeData,
+                date: Timestamp.now()
+            });
+
+            statusBtn.innerText = "✅ บันทึกเสร็จแล้ว!";
+            setTimeout(() => { statusBtn.innerText = ""; }, 3000);
+            
+            // ถ้าอยากให้ล้างช่องชื่อเมนูหลังบันทึก ให้เอา // ออก
+            // document.getElementById('menuName').value = '';
+
+        } catch (e) {
+            console.error("Error adding document: ", e);
+            statusBtn.innerText = "❌ เกิดข้อผิดพลาด (เช็ค Console)";
+            alert("บันทึกไม่ได้: กรุณาเช็คว่าตั้งค่า Database เป็น Test Mode หรือยังครับ?");
+        }
+    }
+
+    // ฟังก์ชันโหลดข้อมูล
+    window.loadHistoryFromFirebase = async function() {
+        let tbody = document.getElementById('historyTable');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">กำลังโหลดข้อมูล...</td></tr>';
+
+        try {
+            const q = query(collection(db, "history"), orderBy("date", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            tbody.innerHTML = '';
+
+            if (querySnapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">ยังไม่มีข้อมูลประวัติ</td></tr>';
+                return;
+            }
+
+            querySnapshot.forEach((doc) => {
+                let data = doc.data();
+                
+                let dateObj = data.date.toDate();
+                let dateStr = dateObj.toLocaleDateString('th-TH') + ' ' + dateObj.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+                
+                let detailsHtml = '<ul class="detail-list">';
+                if(data.ingredients && Array.isArray(data.ingredients)) {
+                    data.ingredients.forEach(ing => {
+                        detailsHtml += `
+                            <li>
+                                <b>${ing.name}</b> ใช้ ${ing.useQty} ${ing.unit} (${ing.cost.toFixed(2)} บ.)
+                                <br>
+                                <span class="detail-badge">สต็อก: ซื้อ ${ing.buyPrice} บ. / ${ing.buyQty} ${ing.unit}</span>
+                            </li>`;
+                    });
+                } else {
+                    detailsHtml += '<li>ไม่มีรายละเอียด</li>';
+                }
+                detailsHtml += '</ul>';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${dateStr}</td>
+                        <td style="font-weight:bold; color:var(--primary)">${data.menu}</td>
+                        <td>${detailsHtml}</td>
+                        <td style="text-align:right; font-weight:bold; color:green; font-size:1.2em;">
+                            ${data.cost.toFixed(2)}
+                        </td>
+                    </tr>`;
+            });
+
+        } catch (e) {
+            console.error("Error getting documents: ", e);
+            tbody.innerHTML = '<tr><td colspan="4" style="color:red; text-align:center;">โหลดข้อมูลล้มเหลว (เช็ค Console)</td></tr>';
+        }
+    }
+</script>
+
+<script>
+    // --- Logic คำนวณ (เหมือนเดิม) ---
+    let stockData = [];
+    window.recipeData = [];
+
+    function openTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+        event.currentTarget.classList.add('active');
+        if(tabName === 'history') loadHistoryFromFirebase();
+    }
+
+    function addStock() {
+        let name = document.getElementById('stockName').value;
+        let price = parseFloat(document.getElementById('stockPrice').value);
+        let qty = parseFloat(document.getElementById('stockQty').value);
+        let unit = document.getElementById('stockUnit').value;
+
+        if(name && price && qty && unit) {
+            let costPerUnit = price / qty;
+            stockData.push({ id: Date.now(), name, price, qty, unit, costPerUnit });
+            renderStockTable();
+            ['stockName','stockPrice','stockQty','stockUnit'].forEach(id => document.getElementById(id).value = '');
+        }
+    }
+
+    function renderStockTable() {
+        let tbody = document.getElementById('stockTable');
+        let select = document.getElementById('selectIngredient');
+        tbody.innerHTML = ''; select.innerHTML = '<option value="">-- เลือก --</option>';
+
+        stockData.forEach((item, index) => {
+            tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.price}/${item.qty} ${item.unit}</td><td class="highlight">${item.costPerUnit.toFixed(4)}</td><td><button class="delete" onclick="deleteStock(${index})">ลบ</button></td></tr>`;
+            select.innerHTML += `<option value="${index}">${item.name} (ต้นทุน ${item.costPerUnit.toFixed(4)})</option>`;
+        });
+    }
+
+    function addToRecipe() {
+        let select = document.getElementById('selectIngredient');
+        let useQty = parseFloat(document.getElementById('useQty').value);
+        
+        if(select.value !== "" && useQty > 0) {
+            let item = stockData[select.value];
+            let actualCost = item.costPerUnit * useQty;
+            
+            window.recipeData.push({ 
+                name: item.name, useQty, unit: item.unit, cost: actualCost,
+                buyPrice: item.price, buyQty: item.qty 
+            });
+            renderRecipeTable();
+            document.getElementById('useQty').value = '';
+        }
+    }
+
+    function renderRecipeTable() {
+        let tbody = document.getElementById('recipeTable');
+        tbody.innerHTML = '';
+        let total = 0;
+        window.recipeData.forEach((item, index) => {
+            total += item.cost;
+            tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.useQty} ${item.unit}</td><td class="highlight">${item.cost.toFixed(2)}</td><td><button class="delete" onclick="deleteRecipe(${index})">ลบ</button></td></tr>`;
+        });
+        document.getElementById('grandTotal').innerText = total.toFixed(2);
+    }
+
+    function deleteStock(i) { stockData.splice(i, 1); renderStockTable(); }
+    function deleteRecipe(i) { window.recipeData.splice(i, 1); renderRecipeTable(); }
+</script>
+
+</body>
+</html>
