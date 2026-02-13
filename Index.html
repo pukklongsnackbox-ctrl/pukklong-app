@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>พักกล่อง - ระบบคำนวณต้นทุน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; }
+        body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
+        .container { max-width: 1100px; margin: 0 auto; position: relative; }
+        
+        /* Auth Section */
+        .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
+        .user-info { display: flex; justify-content: space-between; align-items: center; }
+        .user-details { display: flex; align-items: center; gap: 15px; }
+        .bar-logo { width: 45px; height: auto; border-radius: 8px; }
+        .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
+        .login-box { max-width: 380px; margin: 20px auto; text-align: center; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #D7CCC8; border-radius: 10px; box-sizing: border-box; }
+        
+        .btn-google { background: #fff; border: 1px solid #e0e0e0; width: 100%; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: bold; margin-bottom: 20px; }
+        .btn-google i { color: #4285F4; font-size: 1.2rem; }
+        .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; }
+
+        /* Tabs */
+        .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); font-size: 1rem; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* UI Elements */
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
+        .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun', sans-serif; font-size: 1rem; }
+        .action-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
+        td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
+        
+        .highlight { color: #795548; font-weight: bold; }
+        .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; text-align: right; margin-top: 15px; border: 1px solid #FFE0B2; }
+        .total-price { font-size: 2.8em; font-weight: bold; color: var(--primary); }
+        .yield-info { color: #E65100; font-weight: bold; font-size: 1.1rem; margin-top: 5px; }
+
+        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .hidden { display: none !important; }
+        
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="auth-bar">
+        <div id="loginSection">
+            <div class="login-box">
+                <img src="พักกล่อง.png" style="width: 120px; margin-bottom: 15px; border-radius: 10px;">
+                <button onclick="loginGoogle()" class="btn-google"><i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google</button>
+                <div style="margin: 15px 0; font-size: 0.9em; color: #8D6E63; font-weight: bold; position: relative;">
+                    <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">หรือใช้อีเมล</span>
+                    <hr style="position: absolute; top: 50%; width: 100%; border: 0.5px solid #eee; z-index: 0;">
+                </div>
+                <input type="email" id="email" class="login-input" placeholder="อีเมล">
+                <input type="password" id="password" class="login-input" placeholder="รหัสผ่าน">
+                <div style="display:flex; justify-content:space-between; gap:12px; margin-top: 10px;">
+                    <button onclick="loginEmail()" class="action-btn" style="flex:1;">เข้าสู่ระบบ</button>
+                    <button onclick="registerEmail()" class="action-btn" style="flex:1; background:transparent; color:var(--primary); border:2px solid var(--primary);">สมัครสมาชิก</button>
+                </div>
+            </div>
+        </div>
+        <div id="userInfo" class="user-info hidden">
+            <div class="user-details">
+                <img src="พักกล่อง.png" class="bar-logo">
+                <img id="userImg" src="" class="user-img">
+                <div>
+                    <span id="userName" style="font-weight:bold; color:var(--primary);"></span>
+                    <span id="roleBadge" style="font-size:0.75em; padding:3px 10px; border-radius:12px; margin-left:5px; color:white; font-weight:bold;"></span>
+                </div>
+            </div>
+            <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <div id="appContent" class="hidden">
+        <div class="tab-menu">
+            <button class="tab-btn active" onclick="openTab('calculator')">คำนวณต้นทุน</button>
+            <button class="tab-btn" onclick="openTab('history')">ประวัติและสูตรทั้งหมด</button>
+        </div>
+
+        <div id="calculator" class="tab-content active">
+            <div class="card">
+                <h2>1. ลงสต็อกวัตถุดิบ (Stock)</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">เลือกวัตถุดิบเดิมเพื่อแก้ไขราคา:</label>
+                    <select id="searchStock" onchange="fillStockData()" style="border: 2px solid var(--yellow);">
+                        <option value="">-- ค้นหาวัตถุดิบที่มีอยู่ --</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <div><input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ"></div>
+                    <div><input type="number" id="stockPrice" placeholder="ราคาทั้งหมด"></div>
+                    <div><input type="number" id="stockQty" placeholder="ปริมาณทั้งหมด"></div>
+                    <div><input type="text" id="stockUnit" placeholder="หน่วย (เช่น กรัม)"></div>
+                    <button onclick="addStock()" class="action-btn"><i class="fas fa-save"></i></button>
+                </div>
+                <table>
+                    <thead><tr><th>วัตถุดิบ</th><th>ราคาซื้อมาล่าสุด</th><th>ทุน/หน่วย</th><th style="text-align:center;">จัดการ</th></tr></thead>
+                    <tbody id="stockTable"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h2>2. ผสมสูตรเมนู (Recipe)</h2>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
+                    <div style="flex: 2;"><label style="font-size: 0.8em; font-weight: bold; color: var(--secondary);">เลือกวัตถุดิบ (ตัวที่ใช้แล้วจะเลือกซ้ำไม่ได้)</label><select id="selectIngredient"></select></div>
+                    <div style="flex: 1;"><label style="font-size: 0.8em; font-weight: bold; color: var(--secondary);">ปริมาณใช้</label><input type="number" id="useQty"></div>
+                    <button onclick="addToRecipe()" id="addRecipeBtn" class="action-btn" style="flex: 1;">+ ใส่สูตร</button>
+                </div>
+                <table>
+                    <thead><tr><th>รายการ</th><th>ปริมาณที่ใช้</th><th>รวมทุน</th><th style="text-align:center;">จัดการ</th></tr></thead>
+                    <tbody id="recipeTable"></tbody>
+                </table>
+                <div class="total-box">
+                    <div style="color: var(--secondary); font-weight: bold; font-size: 1.1em;">ต้นทุนรวมทั้งสูตร</div>
+                    <div class="total-price" id="grandTotal">0.00</div>
+                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-end; align-items: center;">
+                        <div style="text-align: right;"><label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ทำได้กี่ชิ้น? (Yield)</label><br><input type="number" id="yieldQty" style="width:120px; text-align:center;" oninput="calculateUnitCost()"></div>
+                        <div style="text-align: left;"><label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ชื่อเมนู</label><br><input type="text" id="menuName" style="width:250px;" placeholder="ชื่อเมนู"></div>
+                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32; height: 52px;">💾 บันทึกสูตร</button>
+                    </div>
+                    <div id="unitCostDisplay" class="yield-info"></div>
+                    <p id="statusMsg" style="font-weight: bold; margin-top:15px; font-size: 1.1em;"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="history" class="tab-content">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h2>📋 ประวัติการคำนวณแบบละเอียด</h2>
+                    <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> อัปเดตราคา</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">วันที่</th>
+                            <th style="width: 18%;">เมนู / ผลผลิต</th>
+                            <th>รายละเอียดวัตถุดิบ (อัปเดตราคาตลาดล่าสุด)</th>
+                            <th style="width: 18%; text-align:right;">ทุนรวมสุทธิ</th>
+                            <th style="width: 10%; text-align:center;">Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+    const ADMIN_EMAIL = "pukklong.snackbox@gmail.com";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCzi6OehJGWJwKoaFcYbdIfC7PZrK3er8c",
+      authDomain: "pukklong-cost-a10b8.firebaseapp.com",
+      projectId: "pukklong-cost-a10b8",
+      storageBucket: "pukklong-cost-a10b8.firebasestorage.app",
+      messagingSenderId: "274783658577",
+      appId: "1:274783658577:web:929415a13be6b580b50e70"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null, isAdmin = false;
+    window.stockData = []; window.recipeData = [];
+    let editIdx = -1;
+
+    window.loginGoogle = () => signInWithPopup(auth, provider);
+    window.loginEmail = () => {
+        const e = document.getElementById('email').value, p = document.getElementById('password').value;
+        signInWithEmailAndPassword(auth, e, p).catch(err => alert("อีเมลหรือรหัสผ่านผิด!"));
+    };
+    window.registerEmail = () => {
+        const e = document.getElementById('email').value, p = document.getElementById('password').value;
+        createUserWithEmailAndPassword(auth, e, p).then(() => alert("สมัครสำเร็จ!")).catch(err => alert(err.message));
+    };
+    window.logout = () => signOut(auth).then(() => location.reload());
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            isAdmin = (user.email === ADMIN_EMAIL);
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('appContent').classList.remove('hidden');
+            document.getElementById('userImg').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=8D6E63&color=fff`;
+            document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
+            let badge = document.getElementById('roleBadge');
+            badge.innerText = isAdmin ? "Admin" : "Member";
+            badge.style.background = isAdmin ? "#D32F2F" : "var(--yellow)";
+            fetchStock();
+        }
+    });
+
+    async function fetchStock() {
+        const snap = await getDocs(collection(db, "global_stock"));
+        window.stockData = [];
+        snap.forEach(d => window.stockData.push(d.data()));
+        renderStockTable();
+    }
+
+    window.addStock = async function() {
+        let n = document.getElementById('stockName').value, p = parseFloat(document.getElementById('stockPrice').value), q = parseFloat(document.getElementById('stockQty').value), u = document.getElementById('stockUnit').value;
+        if(n && p && q) {
+            await setDoc(doc(db, "global_stock", n), {name:n, price:p, qty:q, unit:u, cp:p/q});
+            alert("บันทึกราคากลางสำเร็จ");
+            fetchStock();
+            ['stockName','stockPrice','stockQty','stockUnit'].forEach(id => document.getElementById(id).value = '');
+        }
+    };
+
+    window.deleteStockItem = async (name) => {
+        if(confirm(`ต้องการลบ ${name} ออกจากสต็อกหรือไม่?`)) {
+            await deleteDoc(doc(db, "global_stock", name));
+            fetchStock();
+        }
+    };
+
+    window.renderStockTable = () => {
+        let tb = document.getElementById('stockTable'), searchSel = document.getElementById('searchStock');
+        tb.innerHTML = ''; searchSel.innerHTML = '<option value="">-- ค้นหาวัตถุดิบที่มีอยู่ --</option>';
+        window.stockData.forEach((s, i) => {
+            let delBtn = isAdmin ? `<button onclick="deleteStockItem('${s.name}')" class="delete-btn" style="padding:4px 8px;"><i class="fas fa-trash"></i></button>` : '-';
+            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty}</td><td class="highlight">${s.cp.toFixed(4)}</td><td style="text-align:center;">${delBtn}</td></tr>`;
+            searchSel.innerHTML += `<option value="${i}">${s.name}</option>`;
+        });
+        updateDropdown();
+    };
+
+    window.updateDropdown = () => {
+        let sel = document.getElementById('selectIngredient');
+        sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
+        window.stockData.forEach((s, i) => {
+            let isUsed = window.recipeData.some((r, rIdx) => r.name === s.name && rIdx !== editIdx);
+            let disabled = isUsed ? 'disabled' : '';
+            let label = isUsed ? `${s.name} (เลือกแล้ว)` : s.name;
+            sel.innerHTML += `<option value="${i}" ${disabled}>${label}</option>`;
+        });
+    };
+
+    window.addToRecipe = () => {
+        let idx = document.getElementById('selectIngredient').value, qty = parseFloat(document.getElementById('useQty').value);
+        if(idx !== "" && qty > 0) {
+            let s = window.stockData[idx];
+            let item = {name:s.name, useQty:qty, unit:s.unit, cost:s.cp*qty};
+            if(editIdx > -1) {
+                window.recipeData[editIdx] = item;
+                editIdx = -1;
+                document.getElementById('addRecipeBtn').innerText = "+ ใส่สูตร";
+            } else {
+                window.recipeData.push(item);
+            }
+            renderRecipeTable();
+            document.getElementById('useQty').value = '';
+        }
+    };
+
+    window.renderRecipeTable = () => {
+        let tb = document.getElementById('recipeTable'), total = 0;
+        tb.innerHTML = '';
+        window.recipeData.forEach((r, i) => {
+            total += r.cost;
+            tb.innerHTML += `<tr>
+                <td><b>${r.name}</b></td><td>${r.useQty} ${r.unit}</td><td class="highlight">${r.cost.toFixed(2)}</td>
+                <td style="text-align:center;">
+                    <button onclick="editItem(${i})" class="edit-btn" style="padding:4px 8px;">แก้</button>
+                    <button onclick="window.recipeData.splice(${i},1);renderRecipeTable();" class="delete-btn" style="padding:4px 8px;">ลบ</button>
+                </td>
+            </tr>`;
+        });
+        document.getElementById('grandTotal').innerText = total.toFixed(2);
+        updateDropdown(); calculateUnitCost();
+    };
+
+    window.editItem = (i) => {
+        editIdx = i;
+        let item = window.recipeData[i];
+        let sIdx = window.stockData.findIndex(s => s.name === item.name);
+        updateDropdown();
+        document.getElementById('selectIngredient').value = sIdx;
+        document.getElementById('useQty').value = item.useQty;
+        document.getElementById('addRecipeBtn').innerText = "✅ ตกลง";
+    };
+
+    window.saveToFirebase = async () => {
+        let name = document.getElementById('menuName').value, yieldQty = document.getElementById('yieldQty').value;
+        if(!name || window.recipeData.length === 0) return alert("กรุณากรอกข้อมูลให้ครบ");
+        await addDoc(collection(db, "history"), {
+            menu: name, ingredients: window.recipeData, yield: yieldQty, date: Timestamp.now(), savedBy: currentUser.email
+        });
+        alert("บันทึกสำเร็จ!"); location.reload();
+    };
+
+    window.loadHistoryFromFirebase = async () => {
+        let tb = document.getElementById('historyTable'); tb.innerHTML = 'กำลังโหลด...';
+        const stockSnap = await getDocs(collection(db, "global_stock"));
+        const currentPrices = {}; stockSnap.forEach(d => currentPrices[d.id] = d.data().cp);
+        const q = query(collection(db, "history"), orderBy("date", "desc"));
+        const snap = await getDocs(q);
+        tb.innerHTML = '';
+        snap.forEach(d => {
+            let item = d.data(), total = 0;
+            let ingHtml = '<table style="width:100%; font-size:0.8em; background:#f9f9f9; border-radius:5px;">';
+            item.ingredients.forEach(ing => {
+                let cp = currentPrices[ing.name] || 0; let cost = cp * ing.useQty; total += cost;
+                ingHtml += `<tr><td>${ing.name}</td><td>${ing.useQty} ${ing.unit}</td><td style="text-align:right;">${cost.toFixed(2)}</td></tr>`;
+            });
+            ingHtml += '</table>';
+            let adminBtns = isAdmin ? `<button onclick="deleteHist('${d.id}')" class="delete-btn">ลบ</button>` : '-';
+            tb.innerHTML += `<tr>
+                <td style="font-size:0.8em;">${item.date.toDate().toLocaleDateString()}</td>
+                <td><b>${item.menu}</b>${item.yield ? '<br><small>ทำได้: '+item.yield+'</small>' : ''}</td>
+                <td>${ingHtml}</td>
+                <td style="text-align:right;"><b style="color:#2E7D32;">${total.toFixed(2)}</b>${item.yield ? '<br><small>เฉลี่ย: '+(total/item.yield).toFixed(2)+'</small>' : ''}</td>
+                <td style="text-align:center;">${adminBtns}</td>
+            </tr>`;
+        });
+    };
+
+    window.deleteHist = async (id) => { if(confirm("ลบประวัติ?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); } };
+    window.fillStockData = () => {
+        let i = document.getElementById('searchStock').value;
+        if(i!=="") {
+            let s = window.stockData[i];
+            document.getElementById('stockName').value = s.name;
+            document.getElementById('stockPrice').value = s.price;
+            document.getElementById('stockQty').value = s.qty;
+            document.getElementById('stockUnit').value = s.unit;
+        }
+    };
+</script>
+
+<script>
+    function openTab(name) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(name).classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
+        if(name === 'history') window.loadHistoryFromFirebase();
+    }
+    function calculateUnitCost() {
+        let total = parseFloat(document.getElementById('grandTotal').innerText);
+        let yieldQty = parseFloat(document.getElementById('yieldQty').value);
+        document.getElementById('unitCostDisplay').innerText = yieldQty > 0 ? `💡 เฉลี่ยชิ้นละ: ${(total/yieldQty).toFixed(2)} บาท` : '';
+    }
+</script>
+
+</body>
+</html>
