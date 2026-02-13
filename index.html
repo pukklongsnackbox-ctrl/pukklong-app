@@ -35,12 +35,11 @@
         th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
         td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
 
-        /* แถบสีเหลือง */
         .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; margin-top: 15px; border: 1px solid #FFE0B2; text-align: right; }
         .total-price { font-size: 3.2em; font-weight: bold; color: var(--primary); margin: 10px 0; }
         .unit-cost-info { color: #D84315; font-weight: bold; font-size: 1.3em; border-top: 1px dashed #FFE0B2; padding-top: 10px; margin-top: 10px; }
         
-        /* ประวัติการคำนวณ */
+        /* History Section */
         .history-row { background: white; border-bottom: 10px solid var(--bg); }
         .history-menu-cell { background: linear-gradient(to right, #ffffff, #FDF5E6); border-radius: 15px 0 0 15px; }
         .history-cost-cell { background: var(--green-soft); border-radius: 0 15px 15px 0; text-align: right; }
@@ -48,7 +47,10 @@
         
         .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 4px; }
         .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .toggle-btn { background: none; border: 1px solid var(--accent); color: var(--secondary); padding: 2px 8px; border-radius: 5px; font-size: 0.7em; cursor: pointer; margin-top: 5px; }
+        
+        /* ปุ่มสลับ ย่อ/เต็ม */
+        .toggle-btn { background: #EFEBE9; border: 1px solid var(--accent); color: var(--primary); padding: 3px 10px; border-radius: 5px; font-size: 0.75em; cursor: pointer; margin-top: 8px; font-weight: bold; }
+        .toggle-btn:hover { background: var(--accent); color: white; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -120,7 +122,7 @@
     <div id="history" class="tab-content">
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2>📋 ประวัติการคำนวณแบบละเอียด</h2>
+                <h2>📋 ประวัติการคำนวณ (แบบ ย่อ/เต็ม)</h2>
                 <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> อัปเดตราคา</button>
             </div>
             <table>
@@ -160,7 +162,7 @@
 
     let currentUser = null, isAdmin = false;
     window.stockData = []; window.recipeData = [];
-    let isEditMode = false;
+    let isEditAction = false;
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -232,9 +234,9 @@
         updateDropdown(); calculateUnitCost();
     };
 
-    // --- ส่วนที่ปรับปรุงเฉพาะประวัติวัตถุดิบ ---
+    // --- ส่วนประวัติที่แก้ไขใหม่ (ย่อ/เต็ม และขยับพื้นที่ชิดกัน) ---
     window.loadHistoryFromFirebase = async () => {
-        let tb = document.getElementById('historyTable'); tb.innerHTML = 'กำลังโหลด...';
+        let tb = document.getElementById('historyTable'); tb.innerHTML = '<tr><td colspan="5" style="text-align:center;">กำลังโหลด...</td></tr>';
         const stockSnap = await getDocs(collection(db, "global_stock"));
         const currentMap = {}; stockSnap.forEach(d => currentMap[d.id] = d.data());
         
@@ -254,21 +256,21 @@
                 let cost = (s ? s.cp : 0) * ing.useQty;
                 total += cost;
                 
-                // แบบย่อ: ชิดกัน แยกบรรทัด ไม่มีเส้นประ
-                shortRows += `<div style="margin-bottom:2px;"><b>• ${ing.name}</b> (${cost.toFixed(2)} บ.)</div>`;
+                // แบบย่อ: ขยับชิดกัน แยกบรรทัด ไม่มีเส้นประ
+                shortRows += `<div style="margin-bottom:1px;"><b>• ${ing.name}</b> ใช้ ${ing.useQty} ${ing.unit} (${cost.toFixed(2)} บ.)</div>`;
                 
-                // แบบเต็ม: รายละเอียดเยอะ ชิดกัน
+                // แบบเต็ม: รายละเอียดสต็อกครบถ้วน
                 fullRows += `
-                    <div style="margin-bottom:5px;">
-                        <div style="font-weight:bold;">• ${ing.name} <span style="font-weight:normal; color:var(--primary);">[ใช้ ${ing.useQty} ${ing.unit} = ${cost.toFixed(2)} บ.]</span></div>
-                        ${s ? `<div style="font-size:0.85em; color:#666; background:#f5f5f5; padding:1px 8px; border-radius:4px; display:inline-block; margin-left:12px;">สต็อก: ${s.price} บ. / ${s.qty} ${ing.unit}</div>` : ''}
+                    <div style="margin-bottom:4px;">
+                        <div style="font-weight:bold;">• ${ing.name} <span style="font-weight:normal;">[ใช้ ${ing.useQty} ${ing.unit} = ${cost.toFixed(2)} บ.]</span></div>
+                        ${s ? `<div style="font-size:0.85em; color:#666; background:#f0f0f0; padding:1px 8px; border-radius:4px; display:inline-block; margin-left:12px;">สต็อก: ซื้อ ${s.price} บ. / ${s.qty} ${ing.unit}</div>` : ''}
                     </div>`;
             });
 
             let ingContent = `
                 <div id="short-${d.id}" style="font-size:0.85em; line-height:1.2;">${shortRows}</div>
                 <div id="full-${d.id}" class="hidden" style="font-size:0.85em; line-height:1.2;">${fullRows}</div>
-                <button class="toggle-btn" onclick="toggleView('${d.id}')">สลับ ย่อ/เต็ม</button>`;
+                <button class="toggle-btn" onclick="toggleView('${d.id}')">ดู ย่อ/เต็ม</button>`;
 
             let adminBtns = isAdmin ? `
                 <button onclick='pullToEdit(${JSON.stringify({id: d.id, ...item})})' class="edit-btn"><i class="fas fa-edit"></i></button>
@@ -301,14 +303,14 @@
         let name = document.getElementById('menuName').value, yieldQty = document.getElementById('yieldQty').value;
         if(!name || window.recipeData.length === 0) return alert("ข้อมูลไม่ครบ");
         await addDoc(collection(db, "history"), {
-            menu: name, ingredients: window.recipeData, yield: yieldQty, date: Timestamp.now(), savedBy: currentUser.email, isEdited: isEditMode
+            menu: name, ingredients: window.recipeData, yield: yieldQty, date: Timestamp.now(), savedBy: currentUser.email, isEdited: isEditAction
         });
         alert("บันทึกสำเร็จ!"); location.reload();
     };
 
     window.pullToEdit = (data) => {
         if(!confirm('ดึงสูตรนี้ไปแก้ไข?')) return;
-        isEditMode = true;
+        isEditAction = true;
         document.getElementById('menuName').value = data.menu;
         document.getElementById('yieldQty').value = data.yield || '';
         window.recipeData = data.ingredients.map(ing => {
@@ -319,7 +321,11 @@
     };
 
     window.deleteHist = async (id) => { if(confirm("ลบประวัติ?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); } };
-    window.logout = () => signOut(auth).then(() => location.reload());
+    
+    // --- แก้ไขระบบ Logout เพื่อป้องกันหน้าขาว ---
+    window.logout = () => signOut(auth).then(() => {
+        window.location.href = window.location.origin + window.location.pathname;
+    });
 </script>
 
 <script>
