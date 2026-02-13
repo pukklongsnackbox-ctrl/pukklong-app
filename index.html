@@ -3,46 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พักกล่อง - ระบบคำนวณต้นทุน</title>
+    <title>พักกล่อง - ระบบคำนวณต้นทุนแบบละเอียด</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
-        .container { max-width: 1000px; margin: 0 auto; position: relative; }
+        .container { max-width: 1100px; margin: 0 auto; position: relative; }
+        
+        /* Auth Section */
         .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
         .user-info { display: flex; justify-content: space-between; align-items: center; }
         .user-details { display: flex; align-items: center; gap: 15px; }
-        .bar-logo { width: 40px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+        .bar-logo { width: 45px; height: auto; border-radius: 8px; }
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
-        .login-box { max-width: 380px; margin: 20px auto; text-align: center; padding: 10px; }
-        .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #D7CCC8; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 1rem; transition: 0.3s; }
-        .btn-google { background: #fff; border: 1px solid #e0e0e0; width: 100%; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: bold; font-size: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.3s; color: #444; margin-bottom: 20px; }
-        .btn-google i { font-size: 1.2rem; color: #4285F4; } 
-        .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
+        .login-box { max-width: 380px; margin: 20px auto; text-align: center; }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #D7CCC8; border-radius: 10px; box-sizing: border-box; }
+        
+        .btn-google { background: #fff; border: 1px solid #e0e0e0; width: 100%; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; font-weight: bold; margin-bottom: 20px; }
+        .btn-google i { color: #4285F4; font-size: 1.2rem; }
+        .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; }
+
+        /* Tabs */
         .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 15px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); font-size: 1rem; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* UI Elements */
         .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
         .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun', sans-serif; }
-        .menu-name-input { flex-grow: 1; min-width: 300px; font-size: 1.1em; border: 2px solid var(--accent) !important; padding: 12px !important; }
-        .action-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: all 0.3s; display: inline-flex; align-items: center; justify-content: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #F5F5F5; padding: 12px; text-align: left; }
-        td { padding: 12px; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun', sans-serif; font-size: 1rem; }
+        .action-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .action-btn:hover { opacity: 0.9; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
+        td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
+        
         .highlight { color: #795548; font-weight: bold; }
         .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; text-align: right; margin-top: 15px; border: 1px solid #FFE0B2; }
-        .total-price { font-size: 2.5em; font-weight: bold; color: var(--primary); }
-        .ing-list { margin: 0; padding: 0; list-style: none; font-size: 0.85em; color: #6D4C41; }
-        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .total-price { font-size: 2.8em; font-weight: bold; color: var(--primary); }
+        .yield-info { color: #E65100; font-weight: bold; font-size: 1.1rem; margin-top: 5px; }
+
+        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
-        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } .menu-name-input { min-width: 100%; } }
+        
+        @media (max-width: 600px) { .input-group { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -51,7 +62,7 @@
     <div class="auth-bar">
         <div id="loginSection">
             <div class="login-box">
-                <img src="พักกล่อง.png" style="width: 100px; margin-bottom: 15px;">
+                <img src="พักกล่อง.png" style="width: 120px; margin-bottom: 15px; border-radius: 10px;">
                 <button onclick="loginGoogle()" class="btn-google"><i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google</button>
                 <div style="margin: 15px 0; font-size: 0.9em; color: #8D6E63; font-weight: bold; position: relative;">
                     <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">หรือใช้อีเมล</span>
@@ -67,7 +78,7 @@
         </div>
         <div id="userInfo" class="user-info hidden">
             <div class="user-details">
-                <img src="พักกล่อง.png" class="bar-logo" alt="พักกล่อง">
+                <img src="พักกล่อง.png" class="bar-logo">
                 <img id="userImg" src="" class="user-img">
                 <div>
                     <span id="userName" style="font-weight:bold; color:var(--primary);"></span>
@@ -88,20 +99,20 @@
             <div class="card">
                 <h2>1. ลงสต็อกวัตถุดิบ (Stock)</h2>
                 <div style="margin-bottom: 15px;">
-                    <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ค้นหา/เลือกวัตถุดิบเดิม:</label>
+                    <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">เลือกวัตถุดิบเดิมเพื่อแก้ไขราคา:</label>
                     <select id="searchStock" onchange="fillStockData()" style="border: 2px solid var(--yellow);">
-                        <option value="">-- เลือกเพื่อดึงข้อมูลเดิม --</option>
+                        <option value="">-- ค้นหาวัตถุดิบที่มีอยู่ --</option>
                     </select>
                 </div>
                 <div class="input-group">
                     <div><input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ"></div>
-                    <div><input type="number" id="stockPrice" placeholder="ราคา"></div>
-                    <div><input type="number" id="stockQty" placeholder="ปริมาณ"></div>
-                    <div><input type="text" id="stockUnit" placeholder="หน่วย"></div>
-                    <button onclick="addStock()" id="addStockBtn" class="action-btn"><i class="fas fa-save"></i></button>
+                    <div><input type="number" id="stockPrice" placeholder="ราคาทั้งหมด"></div>
+                    <div><input type="number" id="stockQty" placeholder="ปริมาณทั้งหมด"></div>
+                    <div><input type="text" id="stockUnit" placeholder="หน่วย (เช่น กรัม)"></div>
+                    <button onclick="addStock()" class="action-btn"><i class="fas fa-save"></i></button>
                 </div>
                 <table>
-                    <thead><tr><th>วัตถุดิบ</th><th>ซื้อมา</th><th>ต้นทุน/หน่วย</th><th>จัดการ</th></tr></thead>
+                    <thead><tr><th>วัตถุดิบ</th><th>ราคาซื้อมาล่าสุด</th><th>ต้นทุนเฉลี่ย/หน่วย</th></tr></thead>
                     <tbody id="stockTable"></tbody>
                 </table>
             </div>
@@ -111,37 +122,46 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
                     <div style="flex: 2;"><label style="font-size: 0.8em; font-weight: bold; color: var(--secondary);">เลือกวัตถุดิบ</label><select id="selectIngredient"></select></div>
                     <div style="flex: 1;"><label style="font-size: 0.8em; font-weight: bold; color: var(--secondary);">ปริมาณใช้</label><input type="number" id="useQty"></div>
-                    <button onclick="addToRecipe()" id="addRecipeBtn" class="action-btn" style="flex: 1;">+ ใส่สูตร</button>
+                    <button onclick="addToRecipe()" class="action-btn" style="flex: 1;">+ ใส่สูตร</button>
                 </div>
                 <table>
-                    <thead><tr><th>รายการ</th><th>ใช้ไป</th><th>ต้นทุนจริง</th><th>จัดการ</th></tr></thead>
+                    <thead><tr><th>รายการ</th><th>ปริมาณที่ใช้</th><th>รวมทุน</th><th>จัดการ</th></tr></thead>
                     <tbody id="recipeTable"></tbody>
                 </table>
                 <div class="total-box">
-                    <div style="color: var(--secondary); font-size: 1.1em; font-weight: bold;">ต้นทุนรวมทั้งหมด</div>
+                    <div style="color: var(--secondary); font-weight: bold; font-size: 1.1em;">ต้นทุนรวมทั้งสูตร</div>
                     <div class="total-price" id="grandTotal">0.00</div>
-                    <div style="margin-top: 25px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
-                        <input type="text" id="menuName" class="menu-name-input" placeholder="ใส่ชื่อเมนู">
-                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32; height: 50px; padding: 0 30px; font-size: 1.1rem;">💾 บันทึกสูตร</button>
+                    
+                    <div style="margin-top: 25px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: flex-end; align-items: center;">
+                        <div style="text-align: right;">
+                            <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ผลิตได้กี่ชิ้น? (Yield)</label><br>
+                            <input type="number" id="yieldQty" style="width:120px; text-align:center; border:2px solid #FFE0B2;" placeholder="จำนวน" oninput="calculateUnitCost()">
+                        </div>
+                        <div style="text-align: left;">
+                            <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ชื่อเมนู</label><br>
+                            <input type="text" id="menuName" style="width:250px; border: 2px solid var(--accent);" placeholder="เช่น คุกกี้เนยสด">
+                        </div>
+                        <button onclick="saveToFirebase()" class="action-btn" style="background: #2E7D32; height: 52px; padding: 0 35px; font-size: 1.1rem;">💾 บันทึกสูตร</button>
                     </div>
-                    <p id="statusMsg" style="font-size: 1em; margin-top:10px; font-weight: bold;"></p>
+                    <div id="unitCostDisplay" class="yield-info"></div>
+                    <p id="statusMsg" style="font-weight: bold; margin-top:15px; font-size: 1.1em;"></p>
                 </div>
             </div>
         </div>
 
         <div id="history" class="tab-content">
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2 style="border:none; margin:0;">📋 ประวัติ (อัปเดตราคากลางล่าสุด)</h2>
-                    <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> รีเฟรช</button>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                    <h2 style="border:none; margin:0;">📋 ประวัติการคำนวณ (ข้อมูลละเอียด)</h2>
+                    <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> อัปเดตราคาทั้งหมด</button>
                 </div>
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 20%;">วันที่/เวลา</th>
-                            <th style="width: 20%;">เมนู</th>
-                            <th style="width: 35%;">รายละเอียด (ทุนปัจจุบัน)</th>
-                            <th style="width: 15%; text-align:right;">ต้นทุนรวม</th>
+                            <th style="width: 12%;">วันที่</th>
+                            <th style="width: 18%;">เมนู / ผลผลิต</th>
+                            <th>รายละเอียดวัตถุดิบ (อัปเดตตามราคาซื้อมาล่าสุด)</th>
+                            <th style="width: 18%; text-align:right;">ทุนรวมสุทธิ</th>
                             <th style="width: 10%; text-align:center;">Admin</th>
                         </tr>
                     </thead>
@@ -174,6 +194,7 @@
 
     let currentUser = null, isAdmin = false, isEditMode = false;
 
+    // --- Authentication ---
     window.loginGoogle = () => signInWithPopup(auth, provider);
     window.loginEmail = () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
@@ -181,7 +202,8 @@
     };
     window.registerEmail = () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        createUserWithEmailAndPassword(auth, e, p).then(() => alert("สมัครสำเร็จ!")).catch(err => alert(err.message));
+        if(p.length < 6) return alert("รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร");
+        createUserWithEmailAndPassword(auth, e, p).then(() => alert("สมัครสมาชิกสำเร็จ!")).catch(err => alert(err.message));
     };
     window.logout = () => signOut(auth).then(() => location.reload());
 
@@ -198,51 +220,84 @@
             badge.innerText = isAdmin ? "Admin" : "Member";
             badge.style.background = isAdmin ? "#D32F2F" : "var(--yellow)";
             
-            // โหลดสต็อกเริ่มต้น
-            const stockSnap = await getDocs(collection(db, "global_stock"));
-            window.stockData = [];
-            stockSnap.forEach(d => window.stockData.push(d.data()));
-            renderStockTable();
+            await fetchStock();
         }
     });
+
+    // --- Stock Logic ---
+    async function fetchStock() {
+        const stockSnap = await getDocs(collection(db, "global_stock"));
+        window.stockData = [];
+        stockSnap.forEach(d => window.stockData.push(d.data()));
+        renderStockTable();
+    }
 
     window.addStock = async function() {
         let n = document.getElementById('stockName').value, p = parseFloat(document.getElementById('stockPrice').value), q = parseFloat(document.getElementById('stockQty').value), u = document.getElementById('stockUnit').value;
         if(n && p && q) {
-            const data = {name:n, price:p, qty:q, unit:u, cp:p/q};
+            const data = {name:n, price:p, qty:q, unit:u, cp:p/q, lastUpdate: Timestamp.now()};
             await setDoc(doc(db, "global_stock", n), data);
-            alert("บันทึก/อัปเดตราคาวัตถุดิบเรียบร้อย");
-            location.reload(); 
+            alert("บันทึกราคากลางวัตถุดิบเรียบร้อย");
+            await fetchStock();
+            ['stockName','stockPrice','stockQty','stockUnit'].forEach(i => document.getElementById(i).value = '');
+            document.getElementById('searchStock').value = "";
         }
     };
 
+    window.fillStockData = () => {
+        const idx = document.getElementById('searchStock').value;
+        if(idx !== "") {
+            const s = window.stockData[idx];
+            document.getElementById('stockName').value = s.name;
+            document.getElementById('stockPrice').value = s.price;
+            document.getElementById('stockQty').value = s.qty;
+            document.getElementById('stockUnit').value = s.unit;
+        }
+    };
+
+    window.renderStockTable = () => {
+        let tb = document.getElementById('stockTable'), sel = document.getElementById('selectIngredient'), searchSel = document.getElementById('searchStock');
+        if(!tb) return;
+        tb.innerHTML = ''; 
+        sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
+        searchSel.innerHTML = '<option value="">-- ค้นหาวัตถุดิบที่มีอยู่ --</option>';
+        window.stockData.forEach((s, i) => {
+            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty} ${s.unit}</td><td class="highlight">${s.cp.toFixed(4)}</td></tr>`;
+            sel.innerHTML += `<option value="${i}">${s.name}</option>`;
+            searchSel.innerHTML += `<option value="${i}">${s.name}</option>`;
+        });
+    };
+
+    // --- Save Recipe ---
     window.saveToFirebase = async function() {
-        let nameField = document.getElementById('menuName');
-        let name = nameField.value;
+        let name = document.getElementById('menuName').value;
+        let yieldVal = document.getElementById('yieldQty').value;
         if(!name || window.recipeData.length === 0) return alert("ระบุชื่อเมนูและใส่สูตรก่อน");
-        if(isEditMode && !name.includes("(แก้ไข)")) name = name + " (แก้ไข)";
+        if(isEditMode && !name.includes("(แก้ไข)")) name += " (แก้ไข)";
 
         document.getElementById('statusMsg').innerText = "⏳ กำลังบันทึก...";
         try {
             await addDoc(collection(db, "history"), {
                 menu: name,
-                ingredients: window.recipeData,
+                ingredients: window.recipeData.map(i => ({name: i.name, useQty: i.useQty, unit: i.unit})),
+                yield: yieldVal ? parseFloat(yieldVal) : null,
                 date: Timestamp.now(),
                 savedBy: currentUser.email
             });
-            document.getElementById('statusMsg').innerText = "✅ บันทึกสำเร็จ!";
+            document.getElementById('statusMsg').innerText = "✅ บันทึกสูตรสำเร็จ!";
             isEditMode = false;
-            setTimeout(() => document.getElementById('statusMsg').innerText = "", 3000);
-        } catch (e) { alert(e.message); }
+            setTimeout(() => { document.getElementById('statusMsg').innerText = ""; }, 3000);
+        } catch (e) { alert("เกิดข้อผิดพลาด: " + e.message); }
     };
 
+    // --- History Logic (Detailed) ---
     window.loadHistoryFromFirebase = async function() {
         let tb = document.getElementById('historyTable');
-        tb.innerHTML = '<tr><td colspan="5" style="text-align:center;">กำลังโหลด...</td></tr>';
+        tb.innerHTML = '<tr><td colspan="5" style="text-align:center;">กำลังโหลดรายละเอียดและราคาล่าสุด...</td></tr>';
         
         const stockSnap = await getDocs(collection(db, "global_stock"));
-        const currentPrices = {};
-        stockSnap.forEach(d => currentPrices[d.id] = d.data().cp);
+        const currentStockMap = {};
+        stockSnap.forEach(d => { currentStockMap[d.id] = d.data(); });
 
         const q = query(collection(db, "history"), orderBy("date", "desc"));
         const snap = await getDocs(q);
@@ -251,66 +306,65 @@
         snap.forEach(d => {
             let item = d.data();
             let dateObj = item.date.toDate();
-            let dateStr = dateObj.toLocaleDateString('th-TH') + ' ' + dateObj.toLocaleTimeString('th-TH', {hour: '2-digit', minute:'2-digit'});
+            let dateStr = dateObj.toLocaleDateString('th-TH') + '<br>' + dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
             
             let totalCost = 0;
-            let ingHtml = '<ul class="ing-list">';
-            item.ingredients.forEach(ing => {
-                let latestCP = currentPrices[ing.name] || 0;
-                let cost = latestCP * ing.useQty;
-                totalCost += cost;
-                ingHtml += `<li>• ${ing.name}: ${ing.useQty} ${ing.unit} (${cost.toFixed(2)})</li>`;
-            });
-            ingHtml += '</ul>';
+            let ingHtml = '<table style="width:100%; font-size:0.8em; background:#fdfdfd; border:1px solid #eee; margin:5px 0; border-radius:5px;">';
+            ingHtml += '<tr style="background:#f1f1f1;"><th>วัตถุดิบ</th><th>ซื้อมาล่าสุด</th><th>ปริมาณที่ใช้</th><th style="text-align:right;">ทุนย่อย</th></tr>';
 
-            let adminTools = isAdmin ? `<button onclick='loadForEdit(${JSON.stringify(item)})' class="edit-btn">แก้</button> <button onclick="deleteHistory('${d.id}')" class="delete-btn">ลบ</button>` : '-';
+            item.ingredients.forEach(ing => {
+                let stock = currentStockMap[ing.name];
+                let cp = stock ? stock.cp : 0;
+                let cost = cp * ing.useQty;
+                totalCost += cost;
+                ingHtml += `<tr>
+                    <td><b>${ing.name}</b></td>
+                    <td style="color:#777;">${stock ? stock.price+'/'+stock.qty+' '+stock.unit : '<span style="color:red;">ไม่มีในสต็อก</span>'}</td>
+                    <td>${ing.useQty} ${ing.unit}</td>
+                    <td style="text-align:right; font-weight:bold;">${cost.toFixed(2)}</td>
+                </tr>`;
+            });
+            ingHtml += '</table>';
+
+            let yieldText = item.yield ? `<br><small style="color:var(--secondary); background:#FFE0B2; padding:2px 6px; border-radius:4px;">ทำได้: ${item.yield} ชิ้น</small>` : "";
+            let unitCostText = item.yield ? `<div style="color:#E65100; font-weight:bold; font-size:1.1em; margin-top:8px;">(เฉลี่ยชิ้นละ ${(totalCost/item.yield).toFixed(2)}.-)</div>` : "";
+
+            let adminTools = isAdmin ? `
+                <button onclick='loadForEdit(${JSON.stringify(item)})' class="edit-btn" style="width:100%; margin-bottom:5px;">แก้สูตร</button>
+                <button onclick="deleteHistory('${d.id}')" class="delete-btn" style="width:100%;">ลบประวัติ</button>` : '-';
+            
             tb.innerHTML += `<tr>
-                <td style="font-size:0.85em;">${dateStr}</td>
-                <td class="highlight">${item.menu}</td>
+                <td style="font-size:0.8em; color:#888;">${dateStr}</td>
+                <td><b style="font-size:1.1em;">${item.menu}</b>${yieldText}</td>
                 <td>${ingHtml}</td>
-                <td style="text-align:right; font-weight:bold; color:blue;">${totalCost.toFixed(2)}</td>
-                <td style="text-align:center;">${adminTools}</td>
+                <td style="text-align:right; vertical-align:middle; background:#FFFDE7; border-left:1px solid #FFF9C4;">
+                    <div style="font-size:0.8em; color:#8D6E63;">รวมทุนปัจจุบัน</div>
+                    <div style="font-size:1.6em; font-weight:bold; color:#2E7D32;">${totalCost.toFixed(2)}</div>
+                    ${unitCostText}
+                </td>
+                <td style="text-align:center; vertical-align:middle;">${adminTools}</td>
             </tr>`;
         });
     };
 
     window.loadForEdit = (data) => {
         isEditMode = true;
-        window.recipeData = data.ingredients;
+        window.recipeData = data.ingredients.map(ing => {
+            const stockItem = window.stockData.find(s => s.name === ing.name);
+            return {...ing, cost: stockItem ? stockItem.cp * ing.useQty : 0};
+        });
         document.getElementById('menuName').value = data.menu;
+        document.getElementById('yieldQty').value = data.yield || '';
         renderRecipeTable();
         openTab('calculator');
     };
     
-    window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
-
-    // --- ส่วนงานสต็อก ---
-    window.fillStockData = () => {
-        const selectedIdx = document.getElementById('searchStock').value;
-        if (selectedIdx !== "") {
-            const item = window.stockData[selectedIdx];
-            document.getElementById('stockName').value = item.name;
-            document.getElementById('stockPrice').value = item.price;
-            document.getElementById('stockQty').value = item.qty;
-            document.getElementById('stockUnit').value = item.unit;
-        }
-    };
-
-    window.renderStockTable = () => {
-        let tb = document.getElementById('stockTable'), sel = document.getElementById('selectIngredient'), searchSel = document.getElementById('searchStock');
-        tb.innerHTML = ''; sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
-        searchSel.innerHTML = '<option value="">-- เลือกเพื่อดึงข้อมูลเดิม --</option>';
-        window.stockData.forEach((s, i) => {
-            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty} ${s.unit}</td><td class="highlight">${s.cp.toFixed(4)}</td><td>-</td></tr>`;
-            sel.innerHTML += `<option value="${i}">${s.name}</option>`;
-            searchSel.innerHTML += `<option value="${i}">${s.name}</option>`;
-        });
-    };
+    window.deleteHistory = async (id) => { if(confirm("ต้องการลบสูตรนี้ใช่หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
 </script>
 
 <script>
+    // --- Local Logic ---
     window.stockData = []; window.recipeData = [];
-    let eRIdx = -1;
 
     function openTab(name) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -327,6 +381,8 @@
             window.recipeData.push({name:s.name, useQty:qty, unit:s.unit, cost:s.cp*qty});
             renderRecipeTable();
             document.getElementById('useQty').value = '';
+        } else {
+            alert("กรุณาเลือกวัตถุดิบและใส่ปริมาณที่ใช้");
         }
     }
 
@@ -335,9 +391,21 @@
         tb.innerHTML = '';
         window.recipeData.forEach((r, i) => {
             total += r.cost;
-            tb.innerHTML += `<tr><td>${r.name}</td><td>${r.useQty} ${r.unit}</td><td class="highlight">${r.cost.toFixed(2)}</td><td><button class="delete-btn" onclick="window.recipeData.splice(${i},1);renderRecipeTable();">ลบ</button></td></tr>`;
+            tb.innerHTML += `<tr><td><b>${r.name}</b></td><td>${r.useQty} ${r.unit}</td><td class="highlight">${r.cost.toFixed(2)}</td><td><button class="delete-btn" style="padding:4px 10px;" onclick="window.recipeData.splice(${i},1);renderRecipeTable();">ลบ</button></td></tr>`;
         });
         document.getElementById('grandTotal').innerText = total.toFixed(2);
+        calculateUnitCost();
+    }
+
+    function calculateUnitCost() {
+        let total = parseFloat(document.getElementById('grandTotal').innerText);
+        let yieldQty = parseFloat(document.getElementById('yieldQty').value);
+        let display = document.getElementById('unitCostDisplay');
+        if(yieldQty > 0) {
+            display.innerText = `💡 ต้นทุนประมาณชิ้นละ: ${(total/yieldQty).toFixed(2)} บาท`;
+        } else {
+            display.innerText = '';
+        }
     }
 </script>
 
