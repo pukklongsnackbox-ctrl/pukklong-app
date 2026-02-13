@@ -20,14 +20,12 @@
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; }
 
-        /* Tabs */
         .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 15px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); font-size: 1rem; }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* UI Cards */
         .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
         input, select { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun'; }
@@ -37,26 +35,20 @@
         th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
         td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
 
-        /* แถบสีเหลือง (Calculator Summary) */
+        /* แถบสีเหลือง */
         .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; margin-top: 15px; border: 1px solid #FFE0B2; text-align: right; }
         .total-price { font-size: 3.2em; font-weight: bold; color: var(--primary); margin: 10px 0; }
         .unit-cost-info { color: #D84315; font-weight: bold; font-size: 1.3em; border-top: 1px dashed #FFE0B2; padding-top: 10px; margin-top: 10px; }
         
-        /* ประวัติการคำนวณ (History) */
-        .history-row { background: white; border-bottom: 10px solid var(--bg); transition: 0.3s; }
+        /* ประวัติการคำนวณ */
+        .history-row { background: white; border-bottom: 10px solid var(--bg); }
         .history-menu-cell { background: linear-gradient(to right, #ffffff, #FDF5E6); border-radius: 15px 0 0 15px; }
         .history-cost-cell { background: var(--green-soft); border-radius: 0 15px 15px 0; text-align: right; }
         .badge-yield { background: var(--orange-soft); color: #E65100; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
         
-        /* สไตล์รายละเอียดวัตถุดิบ */
-        .ing-detail-item { border-bottom: 1px dashed #ccc; padding: 8px 0; }
-        .ing-detail-main { font-size: 1.05em; color: #4E342E; }
-        .ing-detail-stock { display: inline-block; background: #eeeeee; color: #666; padding: 2px 10px; border-radius: 12px; font-size: 0.85em; margin-top: 4px; border: 1px solid #ddd; }
-
         .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 4px; }
         .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .toggle-btn { background: white; border: 1px solid var(--accent); color: var(--secondary); padding: 3px 10px; border-radius: 5px; font-size: 0.75em; cursor: pointer; margin-top: 5px; }
-        .toggle-btn:hover { background: var(--bg); }
+        .toggle-btn { background: none; border: 1px solid var(--accent); color: var(--secondary); padding: 2px 8px; border-radius: 5px; font-size: 0.7em; cursor: pointer; margin-top: 5px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -128,7 +120,7 @@
     <div id="history" class="tab-content">
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                <h2>📋 ประวัติการคำนวณ (แบบ ย่อ/เต็ม)</h2>
+                <h2>📋 ประวัติการคำนวณแบบละเอียด</h2>
                 <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> อัปเดตราคา</button>
             </div>
             <table>
@@ -136,7 +128,7 @@
                     <tr>
                         <th style="width:15%;">วันที่ / เวลา</th>
                         <th style="width:20%;">เมนู / ผลผลิต</th>
-                        <th>รายละเอียดวัตถุดิบ (ย่อ/เต็ม)</th>
+                        <th>รายละเอียดวัตถุดิบ</th>
                         <th style="width:18%; text-align:right;">สรุปต้นทุน</th>
                         <th style="width:10%; text-align:center;">Admin</th>
                     </tr>
@@ -168,7 +160,7 @@
 
     let currentUser = null, isAdmin = false;
     window.stockData = []; window.recipeData = [];
-    let isEditAction = false; // สำหรับเช็คว่ากำลังทำการ "แก้ไข" หรือไม่
+    let isEditMode = false;
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -180,7 +172,6 @@
         }
     });
 
-    // --- Stock Logic ---
     async function fetchStock() {
         const snap = await getDocs(collection(db, "global_stock"));
         window.stockData = [];
@@ -210,7 +201,6 @@
 
     window.deleteStockItem = async (name) => { if(confirm(`ลบ ${name}?`)) { await deleteDoc(doc(db, "global_stock", name)); fetchStock(); } };
 
-    // --- Recipe Logic ---
     window.updateDropdown = () => {
         let sel = document.getElementById('selectIngredient');
         sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
@@ -242,38 +232,43 @@
         updateDropdown(); calculateUnitCost();
     };
 
-    // --- History Logic (Updated) ---
+    // --- ส่วนที่ปรับปรุงเฉพาะประวัติวัตถุดิบ ---
     window.loadHistoryFromFirebase = async () => {
         let tb = document.getElementById('historyTable'); tb.innerHTML = 'กำลังโหลด...';
         const stockSnap = await getDocs(collection(db, "global_stock"));
-        const currentStockMap = {}; stockSnap.forEach(d => currentStockMap[d.id] = d.data());
+        const currentMap = {}; stockSnap.forEach(d => currentMap[d.id] = d.data());
         
         const q = query(collection(db, "history"), orderBy("date", "desc"));
         const snap = await getDocs(q);
         tb.innerHTML = '';
         
         snap.forEach(d => {
-            let item = d.data(); let totalCost = 0;
+            let item = d.data(); let total = 0;
             let dateObj = item.date.toDate();
             let dateStr = dateObj.toLocaleDateString('th-TH') + "<br>" + dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-            
-            // ตรวจสอบสถานะการแก้ไขเพื่อแสดง (แก้ไข)
-            let editTag = item.isEdited ? '<span style="color:#D32F2F; font-size:0.8em;"> (แก้ไข)</span>' : '';
+            let editTag = item.isEdited ? '<span style="color:red; font-size:0.75em;"> (แก้ไข)</span>' : '';
 
-            let ingHtml = `<div id="cont-${d.id}" style="display: flex; flex-direction: column; gap: 5px;">`;
+            let shortRows = "", fullRows = "";
             item.ingredients.forEach(ing => {
-                let stock = currentStockMap[ing.name];
-                let cp = stock ? stock.cp : 0;
-                let cost = cp * ing.useQty;
-                totalCost += cost;
+                let s = currentMap[ing.name];
+                let cost = (s ? s.cp : 0) * ing.useQty;
+                total += cost;
                 
-                ingHtml += `
-                    <div class="ing-detail-item">
-                        <div class="ing-detail-main"><b>${ing.name}</b> ใช้ ${ing.useQty} ${ing.unit} <b>(${cost.toFixed(2)} บ.)</b></div>
-                        ${stock ? `<div class="full-info-${d.id} ing-detail-stock hidden">สต็อก: ซื้อ ${stock.price} บ. / ${stock.qty} ${stock.unit}</div>` : ''}
+                // แบบย่อ: ชิดกัน แยกบรรทัด ไม่มีเส้นประ
+                shortRows += `<div style="margin-bottom:2px;"><b>• ${ing.name}</b> (${cost.toFixed(2)} บ.)</div>`;
+                
+                // แบบเต็ม: รายละเอียดเยอะ ชิดกัน
+                fullRows += `
+                    <div style="margin-bottom:5px;">
+                        <div style="font-weight:bold;">• ${ing.name} <span style="font-weight:normal; color:var(--primary);">[ใช้ ${ing.useQty} ${ing.unit} = ${cost.toFixed(2)} บ.]</span></div>
+                        ${s ? `<div style="font-size:0.85em; color:#666; background:#f5f5f5; padding:1px 8px; border-radius:4px; display:inline-block; margin-left:12px;">สต็อก: ${s.price} บ. / ${s.qty} ${ing.unit}</div>` : ''}
                     </div>`;
             });
-            ingHtml += `<button class="toggle-btn" onclick="toggleView('${d.id}')">ดูแบบ ย่อ/เต็ม</button></div>`;
+
+            let ingContent = `
+                <div id="short-${d.id}" style="font-size:0.85em; line-height:1.2;">${shortRows}</div>
+                <div id="full-${d.id}" class="hidden" style="font-size:0.85em; line-height:1.2;">${fullRows}</div>
+                <button class="toggle-btn" onclick="toggleView('${d.id}')">สลับ ย่อ/เต็ม</button>`;
 
             let adminBtns = isAdmin ? `
                 <button onclick='pullToEdit(${JSON.stringify({id: d.id, ...item})})' class="edit-btn"><i class="fas fa-edit"></i></button>
@@ -286,11 +281,11 @@
                         <b style="color:var(--primary); font-size:1.1em;">${item.menu}${editTag}</b><br>
                         ${item.yield ? `<span class="badge-yield">ทำได้: ${item.yield}</span>` : ''}
                     </td>
-                    <td style="padding:15px; vertical-align:top;">${ingHtml}</td>
+                    <td style="padding:15px; vertical-align:top;">${ingContent}</td>
                     <td class="history-cost-cell" style="padding:15px; vertical-align:middle;">
                         <div style="font-size:0.7em; color:#43A047;">ทุนรวมปัจจุบัน</div>
-                        <div style="font-size:1.5em; font-weight:bold; color:#2E7D32;">${totalCost.toFixed(2)}</div>
-                        ${item.yield ? `<div style="margin-top:5px; padding-top:5px; border-top:1px dashed #ccc;"><small style="color:#8D6E63;">เฉลี่ย:</small> <b style="color:#D84315; font-size:1.2em;">${(totalCost/item.yield).toFixed(2)}</b></div>` : ''}
+                        <div style="font-size:1.5em; font-weight:bold; color:#2E7D32;">${total.toFixed(2)}</div>
+                        ${item.yield ? `<div style="margin-top:5px; padding-top:5px; border-top:1px dashed #ccc;"><small style="color:#8D6E63;">เฉลี่ย:</small> <b style="color:#D84315; font-size:1.2em;">${(total/item.yield).toFixed(2)}</b></div>` : ''}
                     </td>
                     <td style="padding:15px; vertical-align:middle; text-align:center;">${adminBtns}</td>
                 </tr>`;
@@ -298,21 +293,22 @@
     };
 
     window.toggleView = (id) => {
-        document.querySelectorAll(`.full-info-${id}`).forEach(el => el.classList.toggle('hidden'));
+        document.getElementById(`short-${id}`).classList.toggle('hidden');
+        document.getElementById(`full-${id}`).classList.toggle('hidden');
     };
 
     window.saveToFirebase = async () => {
         let name = document.getElementById('menuName').value, yieldQty = document.getElementById('yieldQty').value;
         if(!name || window.recipeData.length === 0) return alert("ข้อมูลไม่ครบ");
         await addDoc(collection(db, "history"), {
-            menu: name, ingredients: window.recipeData, yield: yieldQty, date: Timestamp.now(), savedBy: currentUser.email, isEdited: isEditAction
+            menu: name, ingredients: window.recipeData, yield: yieldQty, date: Timestamp.now(), savedBy: currentUser.email, isEdited: isEditMode
         });
         alert("บันทึกสำเร็จ!"); location.reload();
     };
 
     window.pullToEdit = (data) => {
-        if(!confirm('ดึงสูตรนี้กลับไปแก้ไขใช่หรือไม่?')) return;
-        isEditAction = true; // เปิดโหมดแก้ไข
+        if(!confirm('ดึงสูตรนี้ไปแก้ไข?')) return;
+        isEditMode = true;
         document.getElementById('menuName').value = data.menu;
         document.getElementById('yieldQty').value = data.yield || '';
         window.recipeData = data.ingredients.map(ing => {
@@ -320,10 +316,9 @@
             return {...ing, cost: s ? (s.cp * ing.useQty) : 0};
         });
         renderRecipeTable(); openTab('calculator');
-        window.scrollTo({top: 0, behavior: 'smooth'});
     };
 
-    window.deleteHist = async (id) => { if(confirm("ลบประวัตินี้?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); } };
+    window.deleteHist = async (id) => { if(confirm("ลบประวัติ?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); } };
     window.logout = () => signOut(auth).then(() => location.reload());
 </script>
 
