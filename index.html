@@ -83,21 +83,29 @@
             <button class="tab-btn active" onclick="openTab('calculator')">คำนวณต้นทุน</button>
             <button class="tab-btn" onclick="openTab('history')">ประวัติและสูตรทั้งหมด</button>
         </div>
+
         <div id="calculator" class="tab-content active">
             <div class="card">
                 <h2>1. ลงสต็อกวัตถุดิบ (Stock)</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 0.85em; font-weight: bold; color: var(--secondary);">ค้นหา/เลือกวัตถุดิบเดิม:</label>
+                    <select id="searchStock" onchange="fillStockData()" style="border: 2px solid var(--yellow);">
+                        <option value="">-- เลือกเพื่อดึงข้อมูลเดิม --</option>
+                    </select>
+                </div>
                 <div class="input-group">
                     <div><input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ"></div>
                     <div><input type="number" id="stockPrice" placeholder="ราคา"></div>
                     <div><input type="number" id="stockQty" placeholder="ปริมาณ"></div>
                     <div><input type="text" id="stockUnit" placeholder="หน่วย"></div>
-                    <button onclick="addStock()" id="addStockBtn" class="action-btn"><i class="fas fa-plus"></i></button>
+                    <button onclick="addStock()" id="addStockBtn" class="action-btn"><i class="fas fa-save"></i></button>
                 </div>
                 <table>
                     <thead><tr><th>วัตถุดิบ</th><th>ซื้อมา</th><th>ต้นทุน/หน่วย</th><th>จัดการ</th></tr></thead>
                     <tbody id="stockTable"></tbody>
                 </table>
             </div>
+
             <div class="card">
                 <h2>2. ผสมสูตรเมนู (Recipe)</h2>
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-end;">
@@ -120,10 +128,11 @@
                 </div>
             </div>
         </div>
+
         <div id="history" class="tab-content">
             <div class="card">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-                    <h2 style="border:none; margin:0;">📋 ประวัติ (ราคาปัจจุบัน)</h2>
+                    <h2 style="border:none; margin:0;">📋 ประวัติ (อัปเดตราคากลางล่าสุด)</h2>
                     <button onclick="loadHistoryFromFirebase()" class="action-btn" style="background:var(--accent);"><i class="fas fa-sync"></i> รีเฟรช</button>
                 </div>
                 <table>
@@ -201,9 +210,9 @@
         let n = document.getElementById('stockName').value, p = parseFloat(document.getElementById('stockPrice').value), q = parseFloat(document.getElementById('stockQty').value), u = document.getElementById('stockUnit').value;
         if(n && p && q) {
             const data = {name:n, price:p, qty:q, unit:u, cp:p/q};
-            await setDoc(doc(db, "global_stock", n), data); // บันทึกลง Firebase เป็นราคากลาง
-            alert("บันทึกวัตถุดิบเรียบร้อย");
-            location.reload(); // รีเฟรชเพื่ออัปเดตราคาทั้งหมด
+            await setDoc(doc(db, "global_stock", n), data);
+            alert("บันทึก/อัปเดตราคาวัตถุดิบเรียบร้อย");
+            location.reload(); 
         }
     };
 
@@ -231,7 +240,6 @@
         let tb = document.getElementById('historyTable');
         tb.innerHTML = '<tr><td colspan="5" style="text-align:center;">กำลังโหลด...</td></tr>';
         
-        // ดึงราคากลางล่าสุดมาเตรียมไว้
         const stockSnap = await getDocs(collection(db, "global_stock"));
         const currentPrices = {};
         stockSnap.forEach(d => currentPrices[d.id] = d.data().cp);
@@ -275,11 +283,34 @@
     };
     
     window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
+
+    // --- ส่วนงานสต็อก ---
+    window.fillStockData = () => {
+        const selectedIdx = document.getElementById('searchStock').value;
+        if (selectedIdx !== "") {
+            const item = window.stockData[selectedIdx];
+            document.getElementById('stockName').value = item.name;
+            document.getElementById('stockPrice').value = item.price;
+            document.getElementById('stockQty').value = item.qty;
+            document.getElementById('stockUnit').value = item.unit;
+        }
+    };
+
+    window.renderStockTable = () => {
+        let tb = document.getElementById('stockTable'), sel = document.getElementById('selectIngredient'), searchSel = document.getElementById('searchStock');
+        tb.innerHTML = ''; sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
+        searchSel.innerHTML = '<option value="">-- เลือกเพื่อดึงข้อมูลเดิม --</option>';
+        window.stockData.forEach((s, i) => {
+            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty} ${s.unit}</td><td class="highlight">${s.cp.toFixed(4)}</td><td>-</td></tr>`;
+            sel.innerHTML += `<option value="${i}">${s.name}</option>`;
+            searchSel.innerHTML += `<option value="${i}">${s.name}</option>`;
+        });
+    };
 </script>
 
 <script>
     window.stockData = []; window.recipeData = [];
-    let eSIdx = -1, eRIdx = -1;
+    let eRIdx = -1;
 
     function openTab(name) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -287,15 +318,6 @@
         document.getElementById(name).classList.add('active');
         if (event && event.currentTarget) event.currentTarget.classList.add('active');
         if(name === 'history') window.loadHistoryFromFirebase();
-    }
-
-    function renderStockTable() {
-        let tb = document.getElementById('stockTable'), sel = document.getElementById('selectIngredient');
-        tb.innerHTML = ''; sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
-        window.stockData.forEach((s, i) => {
-            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty} ${s.unit}</td><td class="highlight">${s.cp.toFixed(4)}</td><td>-</td></tr>`;
-            sel.innerHTML += `<option value="${i}">${s.name}</option>`;
-        });
     }
 
     function addToRecipe() {
