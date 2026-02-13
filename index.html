@@ -41,7 +41,7 @@
         .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
         .toggle-btn { background: none; border: 1px solid var(--accent); color: var(--secondary); padding: 2px 8px; border-radius: 5px; font-size: 0.7em; cursor: pointer; margin-top: 5px; font-weight: bold; }
         
-        /* --- เพิ่มเติม: ส่วนหน้าจอ Login Style --- */
+        /* --- Login Style --- */
         #login-section {
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             height: 90vh; text-align: center;
@@ -181,15 +181,12 @@
     let currentUser = null, isAdmin = false, isEditMode = false;
     window.stockData = []; window.recipeData = [];
 
-    // --- ส่วนจัดการระบบล็อกอินในหน้าเดียว (Single Page Auth) ---
-    
-    // 1. ตรวจสอบสถานะการล็อกอินตลอดเวลา
+    // --- ส่วน Auth และ Login ---
     onAuthStateChanged(auth, async (user) => {
         const loginSection = document.getElementById('login-section');
         const appSection = document.getElementById('app-section');
 
         if (user) {
-            // ล็อกอินแล้ว -> ซ่อนหน้า Login / โชว์หน้า App
             currentUser = user;
             isAdmin = (user.email === ADMIN_EMAIL);
             
@@ -199,30 +196,25 @@
             loginSection.classList.add('hidden');
             appSection.classList.remove('hidden');
             
-            fetchStock(); // โหลดข้อมูลเมื่อเข้าสู่ระบบ
+            fetchStock();
         } else {
-            // ยังไม่ล็อกอิน -> โชว์หน้า Login / ซ่อนหน้า App
             loginSection.classList.remove('hidden');
             appSection.classList.add('hidden');
         }
     });
 
-    // 2. ฟังก์ชันล็อกอิน
     window.loginWithGoogle = () => {
         signInWithPopup(auth, provider).catch((error) => {
             alert("การเข้าสู่ระบบล้มเหลว: " + error.message);
         });
     };
 
-    // 3. ฟังก์ชันออกจากระบบ
     window.logout = () => {
-        // SignOut แล้วรีโหลดหน้าจอเพื่อเคลียร์ค่าต่างๆ (จะกลับไปหน้า Login อัตโนมัติเพราะ user เป็น null)
         signOut(auth).then(() => {
             window.location.reload();
         });
     };
-
-    // ----------------------------------------------------
+    // ----------------------------
 
     async function fetchStock() {
         const snap = await getDocs(collection(db, "global_stock"));
@@ -297,6 +289,11 @@
             let item = d.data(); let total = 0;
             let dateObj = item.date.toDate();
             let dateStr = dateObj.toLocaleDateString('th-TH') + "<br>" + dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+            
+            // --- ส่วนที่เพิ่ม: แสดงชื่อคนบันทึก ---
+            let saverName = item.savedBy ? item.savedBy.split('@')[0] : 'Unknown';
+            // ------------------------------------
+
             let editTag = item.isEdited ? '<span style="color:red; font-size:0.75em;"> (แก้ไข)</span>' : '';
 
             let shortRows = "", fullRows = "";
@@ -324,7 +321,12 @@
 
             tb.innerHTML += `
                 <tr class="history-row">
-                    <td style="padding:15px; font-size:0.85em; color:#8D6E63; vertical-align:top; font-weight:bold;">${dateStr}</td>
+                    <td style="padding:15px; font-size:0.85em; color:#8D6E63; vertical-align:top; font-weight:bold;">
+                        ${dateStr}
+                        <div style="font-weight:normal; font-size:0.8em; color:#BCAAA4; margin-top:5px;">
+                            <i class="fas fa-user-edit"></i> ${saverName}
+                        </div>
+                    </td>
                     <td class="history-menu-cell" style="padding:15px; vertical-align:top;">
                         <b style="color:var(--primary); font-size:1.1em;">${item.menu}${editTag}</b><br>
                         ${item.yield ? `<span class="badge-yield">ทำได้: ${item.yield}</span>` : ''}
