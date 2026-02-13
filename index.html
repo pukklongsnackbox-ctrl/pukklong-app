@@ -12,7 +12,6 @@
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
         .container { max-width: 1000px; margin: 0 auto; position: relative; }
         
-        /* Auth Bar with Logo Integration */
         .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
         .user-info { display: flex; justify-content: space-between; align-items: center; }
         .user-details { display: flex; align-items: center; gap: 15px; }
@@ -20,7 +19,6 @@
         .bar-logo { width: 40px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
         
-        /* --- Login Section (แก้ไขไอคอนและขนาดปุ่ม) --- */
         .login-box { max-width: 380px; margin: 20px auto; text-align: center; padding: 10px; }
         .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #D7CCC8; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 1rem; transition: 0.3s; }
         .login-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px rgba(93, 64, 55, 0.2); }
@@ -44,30 +42,25 @@
             margin-bottom: 20px;
         }
         .btn-google:hover { background: #f8f9fa; border-color: #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
-        /* ใช้สี Brand Google สำหรับไอคอน */
         .btn-google i { font-size: 1.2rem; color: #4285F4; } 
 
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
         .btn-logout:hover { background: #EF9A9A; }
 
-        /* Tabs */
         .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 15px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); font-size: 1rem; transition: 0.3s; }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Cards & Tables */
         .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
         h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
         
         .input-group { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-bottom: 15px; }
         input, select { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun', sans-serif; }
         
-        /* Large Menu Name Input */
         .menu-name-input { flex-grow: 1; min-width: 300px; font-size: 1.1em; border: 2px solid var(--accent) !important; padding: 12px !important; }
         
-        /* --- Action Buttons (ใหญ่ขึ้น) --- */
         .action-btn { 
             background: var(--primary); 
             color: white; 
@@ -226,15 +219,26 @@
 
     let currentUser = null, isAdmin = false, isEditMode = false;
 
-    window.loginGoogle = () => signInWithPopup(auth, provider);
+    // --- ฟังก์ชัน Auth ---
+    window.loginGoogle = () => signInWithPopup(auth, provider).catch(err => alert("Google Login Error: " + err.message));
+    
     window.loginEmail = () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
+        if(!e || !p) return alert("กรุณากรอกอีเมลและรหัสผ่าน");
+        signInWithEmailAndPassword(auth, e, p).catch(err => alert("อีเมลหรือรหัสผ่านผิดพลาด!"));
     };
+
     window.registerEmail = () => {
         const e = document.getElementById('email').value, p = document.getElementById('password').value;
-        createUserWithEmailAndPassword(auth, e, p).then(() => alert("สมัครสำเร็จ!")).catch(err => alert(err.message));
+        if(!e || p.length < 6) return alert("กรุณากรอกอีเมล และรหัสผ่านต้องมี 6 ตัวขึ้นไป");
+        createUserWithEmailAndPassword(auth, e, p)
+            .then(() => alert("สมัครสมาชิกและเข้าสู่ระบบสำเร็จ!"))
+            .catch(err => {
+                if(err.code === 'auth/email-already-in-use') alert("อีเมลนี้ถูกใช้งานแล้ว");
+                else alert(err.message);
+            });
     };
+
     window.logout = () => signOut(auth).then(() => location.reload());
 
     onAuthStateChanged(auth, (user) => {
@@ -244,7 +248,7 @@
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('appContent').classList.remove('hidden');
-            document.getElementById('userImg').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`;
+            document.getElementById('userImg').src = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=8D6E63&color=fff`;
             document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
             let badge = document.getElementById('roleBadge');
             badge.innerText = isAdmin ? "ผู้ดูแลระบบ (Admin)" : "สมาชิกทั่วไป";
@@ -253,6 +257,7 @@
         }
     });
 
+    // --- ระบบบันทึก (พร้อมตัวบอกว่าแก้ไข) ---
     window.saveToFirebase = async function() {
         let nameField = document.getElementById('menuName');
         let name = nameField.value;
@@ -316,7 +321,7 @@
         renderStockTable();
         renderRecipeTable();
         openTab('calculator');
-        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว (เมื่อบันทึกใหม่จะระบุว่าเป็นรายการแก้ไข)");
+        alert("ดึงข้อมูล " + data.menu + " มาแก้ไขแล้ว");
     };
 </script>
 
@@ -329,7 +334,7 @@
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(name).classList.add('active');
         if (event && event.currentTarget) event.currentTarget.classList.add('active');
-        if(name === 'history') loadHistoryFromFirebase();
+        if(name === 'history') window.loadHistoryFromFirebase();
     }
 
     function addStock() {
