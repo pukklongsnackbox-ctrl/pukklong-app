@@ -17,11 +17,10 @@
         .user-info { display: flex; justify-content: space-between; align-items: center; }
         .user-details { display: flex; align-items: center; gap: 15px; }
         
-        /* Logo in User Bar */
         .bar-logo { width: 40px; height: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
         
-        /* --- Login Section (สวยงามขึ้น) --- */
+        /* --- Login Section (แก้ไขไอคอนและขนาดปุ่ม) --- */
         .login-box { max-width: 380px; margin: 20px auto; text-align: center; padding: 10px; }
         .login-input { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #D7CCC8; border-radius: 10px; font-family: 'Sarabun', sans-serif; font-size: 1rem; transition: 0.3s; }
         .login-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 5px rgba(93, 64, 55, 0.2); }
@@ -45,7 +44,8 @@
             margin-bottom: 20px;
         }
         .btn-google:hover { background: #f8f9fa; border-color: #ccc; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transform: translateY(-1px); }
-        .btn-google img { width: 22px; }
+        /* ใช้สี Brand Google สำหรับไอคอน */
+        .btn-google i { font-size: 1.2rem; color: #4285F4; } 
 
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.85em; transition: 0.3s; }
         .btn-logout:hover { background: #EF9A9A; }
@@ -108,7 +108,7 @@
             <div class="login-box">
                 <img src="พักกล่อง.png" style="width: 100px; margin-bottom: 15px;">
                 <button onclick="loginGoogle()" class="btn-google">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/action/google.svg"> เข้าสู่ระบบด้วย Google
+                    <i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google
                 </button>
                 <div style="margin: 15px 0; font-size: 0.9em; color: #8D6E63; font-weight: bold; position: relative;">
                     <span style="background: white; padding: 0 10px; position: relative; z-index: 1;">หรือใช้อีเมล</span>
@@ -224,7 +224,7 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    let currentUser = null, isAdmin = false, isEditMode = false; // เพิ่ม isEditMode เพื่อเช็คการแก้ไข
+    let currentUser = null, isAdmin = false, isEditMode = false;
 
     window.loginGoogle = () => signInWithPopup(auth, provider);
     window.loginEmail = () => {
@@ -258,7 +258,6 @@
         let name = nameField.value;
         if(!name || window.recipeData.length === 0) return alert("ระบุชื่อเมนูและใส่สูตรก่อน");
         
-        // ถ้าอยู่ในโหมดแก้ไข และชื่อยังไม่มีคำว่า (แก้ไข) ให้เติมต่อท้าย
         if(isEditMode && !name.includes("(แก้ไข)")) {
             name = name + " (แก้ไข)";
         }
@@ -276,7 +275,7 @@
             });
             document.getElementById('statusMsg').innerText = "✅ บันทึกสำเร็จ!";
             document.getElementById('statusMsg').style.color = "#2E7D32";
-            isEditMode = false; // บันทึกเสร็จแล้ว รีเซ็ตโหมดแก้ไข
+            isEditMode = false;
             setTimeout(() => document.getElementById('statusMsg').innerText = "", 3000);
         } catch (e) { alert(e.message); }
     };
@@ -310,7 +309,7 @@
     window.deleteHistory = async (id) => { if(confirm("ลบสูตรนี้หรือไม่?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); }};
     
     window.loadForEdit = (data) => {
-        isEditMode = true; // เข้าสู่โหมดแก้ไข
+        isEditMode = true;
         if (data.stockRef) window.stockData = data.stockRef;
         window.recipeData = data.ingredients;
         document.getElementById('menuName').value = data.menu;
