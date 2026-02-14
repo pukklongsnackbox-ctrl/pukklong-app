@@ -115,7 +115,22 @@
                 <input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ">
                 <input type="number" id="stockPrice" placeholder="ราคาทั้งหมด">
                 <input type="number" id="stockQty" placeholder="ปริมาณทั้งหมด">
-                <input type="text" id="stockUnit" placeholder="หน่วย">
+                
+                <div style="position:relative;">
+                    <input type="text" id="stockUnit" list="unitOptions" placeholder="หน่วย (เลือก/พิมพ์)">
+                    <datalist id="unitOptions">
+                        <option value="กรัม">
+                        <option value="กิโลกรัม">
+                        <option value="มิลลิลิตร">
+                        <option value="ลิตร">
+                        <option value="ชิ้น">
+                        <option value="ฟอง">
+                        <option value="แพ็ค">
+                        <option value="ถุง">
+                        <option value="กระป๋อง">
+                        <option value="ขวด">
+                    </datalist>
+                </div>
                 <button onclick="addStock()" class="action-btn"><i class="fas fa-save"></i></button>
             </div>
 
@@ -274,7 +289,6 @@
                 <td style="text-align:center;">${delBtn}</td>
             </tr>`;
             
-            // เพิ่มเลขลำดับใน Dropdown ค้นหา (Section 1)
             searchSel.innerHTML += `<option value="${i}">${i+1}. ${s.name}</option>`;
         });
         updateDropdown();
@@ -287,7 +301,6 @@
         sel.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
         window.stockData.forEach((s, i) => {
             let isUsed = window.recipeData.some((r) => r.name === s.name);
-            // เพิ่มเลขลำดับใน Dropdown เลือกผสมสูตร (Section 2)
             sel.innerHTML += `<option value="${i}" ${isUsed ? 'disabled' : ''}>${i+1}. ${s.name} ${isUsed ? '(เลือกแล้ว)' : ''}</option>`;
         });
     };
