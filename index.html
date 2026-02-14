@@ -58,6 +58,18 @@
         }
         .login-btn-google:hover { background: #357ae8; }
         .hidden { display: none !important; }
+
+        /* --- Style สำหรับปุ่มซ่อนสต็อก --- */
+        .toggle-stock-btn {
+            background: #EFEBE9; color: var(--primary); padding: 10px; 
+            border-radius: 8px; cursor: pointer; text-align: center; 
+            font-weight: bold; margin-top: 15px; border: 1px dashed var(--secondary);
+            transition: 0.2s;
+        }
+        .toggle-stock-btn:hover { background: #D7CCC8; }
+        #stockTableContainer { margin-top: 15px; border-top: 2px solid #EFEBE9; }
+        .fa-chevron-down { transition: transform 0.3s; }
+        .rotated { transform: rotate(180deg); }
     </style>
 </head>
 <body>
@@ -106,10 +118,25 @@
                 <input type="text" id="stockUnit" placeholder="หน่วย">
                 <button onclick="addStock()" class="action-btn"><i class="fas fa-save"></i></button>
             </div>
-            <table>
-                <thead><tr><th>วัตถุดิบ</th><th>ราคา/ปริมาณ</th><th>ทุน/หน่วย</th><th style="text-align:center;">จัดการ</th></tr></thead>
-                <tbody id="stockTable"></tbody>
-            </table>
+
+            <div onclick="toggleStockList()" class="toggle-stock-btn">
+                <i class="fas fa-list"></i> แสดง/ซ่อน รายการสต็อกทั้งหมด <i class="fas fa-chevron-down" id="stockChevron"></i>
+            </div>
+            
+            <div id="stockTableContainer" class="hidden">
+                <div style="margin-top:10px; font-size:0.9em; color:#888;">* รายการด้านล่างคือวัตถุดิบที่มีทั้งหมดในระบบ</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:40px; text-align:center;">#</th> <th>วัตถุดิบ</th>
+                            <th>ราคา/ปริมาณ</th>
+                            <th>ทุน/หน่วย</th>
+                            <th style="text-align:center;">จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stockTable"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card">
@@ -237,7 +264,14 @@
         tb.innerHTML = ''; searchSel.innerHTML = '<option value="">-- เลือกวัตถุดิบเดิม --</option>';
         window.stockData.forEach((s, i) => {
             let delBtn = isAdmin ? `<button onclick="deleteStockItem('${s.name}')" class="delete-btn"><i class="fas fa-trash"></i></button>` : '-';
-            tb.innerHTML += `<tr><td>${s.name}</td><td>${s.price}/${s.qty}</td><td>${s.cp.toFixed(4)}</td><td style="text-align:center;">${delBtn}</td></tr>`;
+            // เพิ่ม <td>${i+1}</td> สำหรับลำดับ
+            tb.innerHTML += `<tr>
+                <td style="text-align:center; color:#888;">${i+1}</td>
+                <td>${s.name}</td>
+                <td>${s.price}/${s.qty}</td>
+                <td>${s.cp.toFixed(4)}</td>
+                <td style="text-align:center;">${delBtn}</td>
+            </tr>`;
             searchSel.innerHTML += `<option value="${i}">${s.name}</option>`;
         });
         updateDropdown();
@@ -289,11 +323,7 @@
             let item = d.data(); let total = 0;
             let dateObj = item.date.toDate();
             let dateStr = dateObj.toLocaleDateString('th-TH') + "<br>" + dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
-            
-            // --- ส่วนที่เพิ่ม: แสดงชื่อคนบันทึก ---
             let saverName = item.savedBy ? item.savedBy.split('@')[0] : 'Unknown';
-            // ------------------------------------
-
             let editTag = item.isEdited ? '<span style="color:red; font-size:0.75em;"> (แก้ไข)</span>' : '';
 
             let shortRows = "", fullRows = "";
@@ -345,6 +375,14 @@
     window.toggleView = (id) => {
         document.getElementById(`short-${id}`).classList.toggle('hidden');
         document.getElementById(`full-${id}`).classList.toggle('hidden');
+    };
+    
+    // ฟังก์ชันใหม่สำหรับเปิด/ปิดตารางสต็อก
+    window.toggleStockList = () => {
+        const container = document.getElementById('stockTableContainer');
+        const icon = document.getElementById('stockChevron');
+        container.classList.toggle('hidden');
+        icon.classList.toggle('rotated');
     };
 
     window.saveToFirebase = async () => {
