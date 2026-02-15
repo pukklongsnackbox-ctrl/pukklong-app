@@ -173,8 +173,8 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-    // --- แก้ไข: นำเข้า signInWithRedirect เพื่อรองรับ iPad/Mobile ---
-    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    // --- แก้ไข: Import ทั้ง Popup และ Redirect เพื่อรองรับทุกอุปกรณ์ ---
+    import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
     const ADMIN_EMAIL = "pukklong.snackbox@gmail.com";
     const firebaseConfig = {
@@ -221,10 +221,16 @@
         }
     });
 
-    // --- แก้ไข: ใช้ signInWithRedirect แทน Popup เพื่อให้ iPad ใช้งานได้ ---
+    // --- แก้ไข: ระบบล็อกอินแบบไฮบริด (Hybrid Login) ---
+    // 1. ลองใช้ Popup ก่อน (สำหรับ PC)
+    // 2. ถ้าไม่ได้ (เช่น iPad บล็อก Popup) จะลองใช้ Redirect (สำหรับ Mobile)
     window.loginWithGoogle = () => {
-        signInWithRedirect(auth, provider);
-        // หมายเหตุ: หน้าเว็บจะโหลดใหม่ไปที่ Google แล้วกลับมาหน้านี้เอง
+        signInWithPopup(auth, provider)
+            .catch((error) => {
+                console.warn("Popup Failed, trying Redirect method...", error);
+                // ถ้า Popup พัง ให้ลองใช้ Redirect แทน
+                signInWithRedirect(auth, provider);
+            });
     };
 
     window.logout = () => {
