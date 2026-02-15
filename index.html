@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- Styles เดิมแบบ Clean Design (คงเดิม) --- */
+        /* --- Styles เดิมของระบบ (คงเดิม 100%) --- */
         :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; --green-soft: #F1F8E9; --orange-soft: #FFF3E0; }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
         .container { max-width: 1100px; margin: 0 auto; }
@@ -41,14 +41,14 @@
         .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
         .toggle-btn { background: none; border: 1px solid var(--accent); color: var(--secondary); padding: 2px 8px; border-radius: 5px; font-size: 0.7em; cursor: pointer; margin-top: 5px; font-weight: bold; }
         
-        /* Login Style */
+        /* --- Login Style --- */
         #login-section { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 90vh; text-align: center; }
         .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(93, 64, 55, 0.1); max-width: 400px; width: 100%; }
         .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 20px; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         .login-btn-google:hover { background: #357ae8; }
         .hidden { display: none !important; }
 
-        /* Stock Toggle Button */
+        /* --- Style สำหรับปุ่มซ่อนสต็อก --- */
         .toggle-stock-btn { background: #EFEBE9; color: var(--primary); padding: 10px; border-radius: 8px; cursor: pointer; text-align: center; font-weight: bold; margin-top: 15px; border: 1px dashed var(--secondary); transition: 0.2s; }
         .toggle-stock-btn:hover { background: #D7CCC8; }
         #stockTableContainer { margin-top: 15px; border-top: 2px solid #EFEBE9; }
@@ -99,23 +99,7 @@
                 <input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ">
                 <input type="number" id="stockPrice" placeholder="ราคาทั้งหมด">
                 <input type="number" id="stockQty" placeholder="ปริมาณทั้งหมด">
-                
-                <div style="position:relative;">
-                    <input type="text" id="stockUnit" list="unitOptions" placeholder="หน่วย (เลือก/พิมพ์)">
-                    <datalist id="unitOptions">
-                        <option value="กรัม">
-                        <option value="กิโลกรัม">
-                        <option value="มิลลิลิตร">
-                        <option value="ลิตร">
-                        <option value="ชิ้น">
-                        <option value="ฟอง">
-                        <option value="แพ็ค">
-                        <option value="ถุง">
-                        <option value="กระป๋อง">
-                        <option value="ขวด">
-                    </datalist>
-                </div>
-
+                <input type="text" id="stockUnit" placeholder="หน่วย">
                 <button onclick="addStock()" class="action-btn"><i class="fas fa-save"></i></button>
             </div>
 
@@ -191,9 +175,9 @@
     import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, query, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-    // --- ⚠️ เปลี่ยนอีเมลตรงนี้เป็นของคุณ ---
-    const ADMIN_EMAIL = "pukklong.snackbox@gmail.com"; 
-
+    // --- อย่าลืมเปลี่ยนอีเมลตรงนี้เป็นของคุณ ---
+    const ADMIN_EMAIL = "pukklong.snackbox@gmail.com";
+    
     const firebaseConfig = {
       apiKey: "AIzaSyCzi6OehJGWJwKoaFcYbdIfC7PZrK3er8c",
       authDomain: "pukklong-cost-a10b8.firebaseapp.com",
@@ -238,16 +222,15 @@
         }
     });
 
-    // --- ส่วน Login ที่แก้ไขให้แจ้ง Error ---
     window.loginWithGoogle = () => {
         signInWithPopup(auth, provider)
             .then((result) => {
-                // Login สำเร็จ ไม่ต้องทำอะไร เดี๋ยว onAuthStateChanged ทำงาน
-                console.log("Login success");
+                // Login สำเร็จ ระบบจะทำงานต่อใน onAuthStateChanged เอง
+                console.log("Login Success");
             })
             .catch((error) => {
-                // แจ้งเตือน Error ทันที
-                alert("เข้าสู่ระบบไม่ได้! Error: " + error.message + "\n\n(ถ้าขึ้น auth/unauthorized-domain ให้ไปเพิ่ม Domain ใน Firebase Console)");
+                // แจ้งเตือน Error
+                alert("เข้าสู่ระบบไม่ได้! \nError: " + error.message + "\n\n(หากขึ้น unauthorized-domain ให้ไปเพิ่ม Domain ใน Firebase Console)");
             });
     };
 
@@ -270,7 +253,7 @@
                 fetchStock();
                 ['stockName','stockPrice','stockQty','stockUnit'].forEach(id => document.getElementById(id).value = '');
             } catch(e) {
-                alert("บันทึกไม่ได้ (กรุณาเช็คสิทธิ์): " + e.message);
+                alert("บันทึกไม่ได้: " + e.message);
             }
         }
     };
@@ -286,16 +269,7 @@
         updateDropdown();
     };
 
-    window.deleteStockItem = async (name) => { 
-        if(confirm(`ยืนยันลบวัตถุดิบ: ${name}?`)) { 
-            try {
-                await deleteDoc(doc(db, "global_stock", name)); 
-                fetchStock(); 
-            } catch(e) {
-                alert("ลบไม่ได้ (กรุณาเช็คสิทธิ์): " + e.message);
-            }
-        } 
-    };
+    window.deleteStockItem = async (name) => { if(confirm(`ลบ ${name}?`)) { await deleteDoc(doc(db, "global_stock", name)); fetchStock(); } };
 
     window.updateDropdown = () => {
         let sel = document.getElementById('selectIngredient');
@@ -321,7 +295,8 @@
         tb.innerHTML = '';
         window.recipeData.forEach((r, i) => {
             total += r.cost;
-            tb.innerHTML += `<tr><td><b>${r.name}</b></td><td>${r.useQty} ${r.unit}</td><td>${r.cost.toFixed(2)}</td><td style="text-align:center;"><button onclick="window.recipeData.splice(${i},1);renderRecipeTable();" class="delete-btn">ลบ</button></td></tr>`;
+            tb.innerHTML += `<tr><td><b>${r.name}</b></td><td>${r.useQty} ${r.unit}</td><td>${r.cost.toFixed(2)}</td>
+                <td style="text-align:center;"><button onclick="window.recipeData.splice(${i},1);renderRecipeTable();" class="delete-btn">ลบ</button></td></tr>`;
         });
         document.getElementById('grandTotal').innerText = total.toFixed(2);
         updateDropdown(); calculateUnitCost();
@@ -341,18 +316,18 @@
             let dateObj = item.date.toDate();
             let dateStr = dateObj.toLocaleDateString('th-TH') + "<br>" + dateObj.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
             let saverName = item.savedBy ? item.savedBy.split('@')[0] : 'Unknown';
-            let editTag = item.isEdited ? '<span style="color:red;">(แก้ไข)</span>' : '';
+            let editTag = item.isEdited ? '<span style="color:red; font-size:0.75em;"> (แก้ไข)</span>' : '';
 
             let shortRows = "", fullRows = "";
             item.ingredients.forEach(ing => {
                 let s = currentMap[ing.name];
                 let cost = (s ? s.cp : 0) * ing.useQty;
                 total += cost;
-                shortRows += `<div>• ${ing.name} (${cost.toFixed(2)})</div>`;
-                fullRows += `<div><b>• ${ing.name}</b> [${ing.useQty} ${ing.unit}]</div>`;
+                shortRows += `<div style="margin-bottom:2px;"><b>• ${ing.name}</b> (${cost.toFixed(2)} บ.)</div>`;
+                fullRows += `<div style="margin-bottom:4px;"><div style="font-weight:bold;">• ${ing.name} <span style="font-weight:normal; color:var(--primary);">[ใช้ ${ing.useQty} ${ing.unit} = ${cost.toFixed(2)} บ.]</span></div></div>`;
             });
 
-            let ingContent = `<div id="short-${d.id}">${shortRows}</div><div id="full-${d.id}" class="hidden">${fullRows}</div><button class="toggle-btn" onclick="toggleView('${d.id}')">สลับดู</button>`;
+            let ingContent = `<div id="short-${d.id}" style="font-size:0.85em; line-height:1.2;">${shortRows}</div><div id="full-${d.id}" class="hidden" style="font-size:0.85em; line-height:1.2;">${fullRows}</div><button class="toggle-btn" onclick="toggleView('${d.id}')">สลับ ย่อ/เต็ม</button>`;
 
             let adminBtns = isAdmin ? `
                 <button onclick='pullToEdit(${JSON.stringify({id: d.id, ...item})})' class="edit-btn"><i class="fas fa-edit"></i></button>
@@ -360,11 +335,11 @@
 
             tb.innerHTML += `
                 <tr class="history-row">
-                    <td style="font-size:0.8em; color:#888;">${dateStr}<br>โดย: ${saverName}</td>
-                    <td><b>${item.menu}${editTag}</b><br><span class="badge-yield">ได้: ${item.yield}</span></td>
-                    <td>${ingContent}</td>
-                    <td class="history-cost-cell"><b>${total.toFixed(2)}</b><br><small style="color:red">ตกชิ้นละ ${(total/item.yield).toFixed(2)}</small></td>
-                    <td style="text-align:center;">${adminBtns}</td>
+                    <td style="padding:15px; font-size:0.85em; color:#8D6E63; vertical-align:top; font-weight:bold;">${dateStr}<div style="font-weight:normal; font-size:0.8em; color:#BCAAA4; margin-top:5px;"><i class="fas fa-user-edit"></i> ${saverName}</div></td>
+                    <td class="history-menu-cell" style="padding:15px; vertical-align:top;"><b style="color:var(--primary); font-size:1.1em;">${item.menu}${editTag}</b><br>${item.yield ? `<span class="badge-yield">ทำได้: ${item.yield}</span>` : ''}</td>
+                    <td style="padding:15px; vertical-align:top;">${ingContent}</td>
+                    <td class="history-cost-cell" style="padding:15px; vertical-align:middle;"><div style="font-size:0.7em; color:#43A047;">ทุนรวมปัจจุบัน</div><div style="font-size:1.5em; font-weight:bold; color:#2E7D32;">${total.toFixed(2)}</div>${item.yield ? `<div style="margin-top:5px; padding-top:5px; border-top:1px dashed #ccc;"><small style="color:#8D6E63;">เฉลี่ย:</small> <b style="color:#D84315; font-size:1.2em;">${(total/item.yield).toFixed(2)}</b></div>` : ''}</td>
+                    <td style="padding:15px; vertical-align:middle; text-align:center;">${adminBtns}</td>
                 </tr>`;
         });
     };
@@ -375,8 +350,10 @@
     };
     
     window.toggleStockList = () => {
-        document.getElementById('stockTableContainer').classList.toggle('hidden');
-        document.getElementById('stockChevron').classList.toggle('rotated');
+        const container = document.getElementById('stockTableContainer');
+        const icon = document.getElementById('stockChevron');
+        container.classList.toggle('hidden');
+        icon.classList.toggle('rotated');
     };
 
     window.saveToFirebase = async () => {
@@ -404,17 +381,7 @@
         renderRecipeTable(); openTab('calculator');
     };
 
-    window.deleteHist = async (id) => { 
-        if(confirm("ยืนยันลบประวัตินี้?")) { 
-            try {
-                await deleteDoc(doc(db, "history", id)); 
-                loadHistoryFromFirebase(); 
-                alert("ลบเรียบร้อย");
-            } catch(e) {
-                alert("ลบไม่ได้: " + e.message);
-            }
-        } 
-    };
+    window.deleteHist = async (id) => { if(confirm("ลบประวัติ?")) { await deleteDoc(doc(db, "history", id)); loadHistoryFromFirebase(); } };
 </script>
 
 <script>
@@ -450,4 +417,3 @@
 
 </body>
 </html>
-
