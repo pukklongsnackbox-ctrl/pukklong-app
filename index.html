@@ -3,87 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พักกล่อง - ระบบจัดการร้านและสต็อก</title>
+    <title>พักกล่อง - ระบบจัดการร้านครบวงจร</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* --- Styles เดิมคงไว้ --- */
+        /* --- Styles Global --- */
         :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; --green-soft: #F1F8E9; --orange-soft: #FFF3E0; }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
         .container { max-width: 1100px; margin: 0 auto; }
         .auth-bar { background: rgba(255, 255, 255, 0.9); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(93, 64, 55, 0.05); }
         .user-info { display: flex; justify-content: space-between; align-items: center; }
         .user-details { display: flex; align-items: center; gap: 15px; }
-        .bar-logo { width: 45px; height: auto; border-radius: 8px; }
         .user-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--secondary); }
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 0.9em; }
+        
+        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun'; margin-bottom: 10px; }
+        .action-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .action-btn:hover { opacity: 0.9; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
+        td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
+        
+        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 4px; }
+        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .withdraw-btn { background: #E1F5FE; color: #0277BD; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+
+        /* --- Tabs --- */
         .tab-menu { display: flex; gap: 8px; margin-bottom: 15px; }
         .tab-btn { flex: 1; padding: 15px; border: none; background: #EFEBE9; border-radius: 10px; cursor: pointer; font-weight: bold; color: var(--secondary); font-size: 1rem; }
         .tab-btn.active { background: var(--primary); color: white; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        h2 { color: var(--primary); font-size: 1.3em; border-bottom: 1px solid #F5F5F5; padding-bottom: 10px; margin-top: 0; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #D7CCC8; border-radius: 8px; box-sizing: border-box; font-family: 'Sarabun'; margin-bottom: 5px; }
-        .action-btn { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #F5F5F5; padding: 12px; text-align: left; font-size: 0.9em; color: var(--secondary); }
-        td { padding: 12px; border-bottom: 1px solid #F5F5F5; }
-        .total-box { background: #FFF3E0; padding: 25px; border-radius: 12px; margin-top: 15px; border: 1px solid #FFE0B2; text-align: right; }
-        .total-price { font-size: 3.2em; font-weight: bold; color: var(--primary); margin: 10px 0; }
-        .unit-cost-info { color: #D84315; font-weight: bold; font-size: 1.3em; border-top: 1px dashed #FFE0B2; padding-top: 10px; margin-top: 10px; }
-        .edit-btn { background: #FFF9C4; color: #F57F17; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; margin-right: 4px; }
-        .delete-btn { background: #FFEBEE; color: #C62828; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .withdraw-btn { background: #E1F5FE; color: #0277BD; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        
-        /* --- Login & Dashboard --- */
-        #login-section { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 90vh; text-align: center; }
-        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(93, 64, 55, 0.1); max-width: 400px; width: 100%; }
-        .login-btn-google { background: #4285F4; color: white; border: none; padding: 12px 20px; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .hidden { display: none !important; }
 
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 40px; }
-        .menu-card { background: white; padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 2px solid transparent; }
+        /* --- Dashboard --- */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .menu-card { background: white; padding: 30px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border: 2px solid transparent; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .menu-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .menu-card i { font-size: 3em; color: var(--primary); margin-bottom: 15px; }
+        .menu-card h3 { margin: 0; color: #4E342E; }
+        .menu-card p { color: #8D6E63; font-size: 0.9em; margin-top: 5px; }
 
-        /* --- POS Styles --- */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+        /* --- POS & Bill --- */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
         .product-item { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; position: relative; }
         .product-item:hover { transform: scale(1.02); }
-        .product-img { width: 100%; height: 120px; object-fit: cover; background: #eee; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; background: #eee; }
         .product-info { padding: 10px; text-align: center; }
         .stock-badge { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: white; font-size: 0.7em; padding: 2px 6px; border-radius: 4px; }
         .out-of-stock { opacity: 0.6; pointer-events: none; filter: grayscale(1); }
         
         .cart-panel { background: white; border-radius: 15px; padding: 20px; height: fit-content; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #eee; padding: 10px 0; }
-        .cart-total { font-size: 1.5em; font-weight: bold; color: var(--primary); text-align: right; margin-top: 20px; }
-
-        /* --- Bill / Modal Styles --- */
+        .cart-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #eee; padding: 10px 0; font-size: 0.9em; }
+        
+        /* --- Modal & Print --- */
         .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); overflow-y: auto; }
         .modal-content { background: white; margin: 2% auto; padding: 30px; width: 90%; max-width: 500px; border-radius: 10px; }
         
-        /* Legal Bill Format */
-        .bill-paper { font-family: 'Sarabun', sans-serif; color: #000; }
-        .bill-header-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
+        /* Bill Layout */
+        .bill-paper { font-family: 'Sarabun', sans-serif; color: #000; padding: 20px; }
+        .bill-header-row { display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #000; }
         .bill-logo { width: 60px; height: auto; margin-right: 15px; }
-        .bill-title { font-size: 1.2em; font-weight: bold; text-align: right; }
-        .bill-info { font-size: 0.8em; line-height: 1.4; }
-        .bill-table { width: 100%; font-size: 0.85em; border-collapse: collapse; margin-top: 10px; }
-        .bill-table th { border-bottom: 1px solid #000; background: #fff; color: #000; text-align: right; padding: 5px; }
-        .bill-table th:first-child { text-align: left; }
-        .bill-table td { border-bottom: 1px dotted #ccc; padding: 5px; text-align: right; }
-        .bill-table td:first-child { text-align: left; }
-        .bill-summary { margin-top: 15px; text-align: right; font-size: 0.9em; }
-        
+        .bill-table-print { width: 100%; font-size: 0.85em; border-collapse: collapse; margin-top: 10px; }
+        .bill-table-print th { border-bottom: 1px solid #000; background: #fff; color: #000; text-align: right; padding: 5px; }
+        .bill-table-print th:first-child { text-align: left; }
+        .bill-table-print td { border-bottom: 1px dotted #ccc; padding: 5px; text-align: right; }
+        .bill-table-print td:first-child { text-align: left; }
+
         @media print {
             body * { visibility: hidden; }
             #printableArea, #printableArea * { visibility: visible; }
-            #printableArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 20px; }
+            #printableArea { position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; }
             .no-print { display: none !important; }
         }
+
+        /* --- Login --- */
+        #login-section { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 90vh; text-align: center; }
+        .login-card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(93, 64, 55, 0.1); max-width: 400px; width: 100%; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -92,98 +91,128 @@
     <div class="login-card">
         <img src="พักกล่อง.png" style="width: 100px; border-radius: 15px; margin-bottom: 20px;" onerror="this.src='https://via.placeholder.com/100'">
         <h2 style="border:none; color:var(--primary); margin-bottom: 5px;">ระบบจัดการร้าน</h2>
-        <p style="color:var(--secondary); margin-bottom: 20px;">กรุณาเข้าสู่ระบบเพื่อใช้งาน</p>
-        <button onclick="loginWithGoogle()" class="login-btn-google"><i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google</button>
+        <button onclick="loginWithGoogle()" class="action-btn" style="background: #4285F4; width:100%; margin-top:20px;"><i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google</button>
     </div>
 </div>
 
 <div id="app-section" class="container hidden">
     <div class="auth-bar">
-        <div id="userInfo" class="user-info">
+        <div class="user-info">
             <div class="user-details">
                 <img id="userImg" src="" class="user-img">
                 <div>
                     <span id="userName" style="font-weight:bold;">User</span>
-                    <span id="roleBadge" style="background:#D32F2F; font-size:0.75em; padding:3px 10px; border-radius:12px; margin-left:5px; color:white; font-weight:bold; display:none;">Admin</span>
+                    <span id="roleBadge" style="background:#D32F2F; font-size:0.75em; padding:2px 8px; border-radius:10px; color:white; display:none;">Admin</span>
                 </div>
             </div>
             <div style="display:flex; gap:10px;">
                 <button onclick="goHome()" class="action-btn" style="background:var(--secondary); font-size:0.9em;"><i class="fas fa-home"></i> หน้าหลัก</button>
-                <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
+                <button onclick="logout()" class="btn-logout">ออก</button>
             </div>
         </div>
     </div>
 
     <div id="dashboard-view">
-        <div style="text-align: center; margin-top: 20px;">
+        <div style="text-align: center; margin-top: 10px;">
             <h1 style="color: var(--primary);">ยินดีต้อนรับสู่ระบบ พักกล่อง</h1>
-            <button id="btnShopSettings" onclick="openShopSettings()" class="action-btn hidden" style="background:var(--accent); font-size:0.9em; margin-bottom:20px;"><i class="fas fa-cog"></i> ตั้งค่าข้อมูลร้าน (สำหรับบิล)</button>
+            <button id="btnShopSettings" onclick="openShopSettings()" class="action-btn hidden" style="background:var(--accent); font-size:0.9em;"><i class="fas fa-cog"></i> ตั้งค่าข้อมูลร้าน (Admin)</button>
         </div>
         <div class="dashboard-grid">
             <div class="menu-card" onclick="openSystem('pos')">
                 <i class="fas fa-cash-register"></i>
-                <h3>ระบบขายหน้าร้าน (POS)</h3>
-                <p>ขายสินค้า, ออกบิลใบกำกับภาษี, ตัดสต็อกขาย</p>
+                <h3>ระบบขาย (POS)</h3>
+                <p>ขายสินค้า, ออกบิลเงินสด, ใบกำกับภาษี</p>
+            </div>
+            <div class="menu-card" onclick="openSystem('stock')">
+                <i class="fas fa-warehouse"></i>
+                <h3>ระบบสต็อก (Stock)</h3>
+                <p>จัดการวัตถุดิบ & สินค้าขาย (ไม่เกี่ยวกับต้นทุน)</p>
             </div>
             <div class="menu-card" onclick="openSystem('cost')">
-                <i class="fas fa-boxes"></i>
-                <h3>ระบบคลังวัตถุดิบ & ต้นทุน</h3>
-                <p>จัดการสต็อกวัตถุดิบ, เบิกใช้ของ, คำนวณสูตร</p>
+                <i class="fas fa-calculator"></i>
+                <h3>คำนวณต้นทุน (Cost)</h3>
+                <p>คำนวณสูตรอาหาร, ดูประวัติ (ไม่ตัดสต็อก)</p>
             </div>
         </div>
     </div>
 
     <div id="pos-view" class="hidden">
+        <div style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 20px;">
+            <div>
+                <h2 style="margin-top:0;">เลือกสินค้า</h2>
+                <div id="posProductGrid" class="product-grid">Loading...</div>
+            </div>
+            
+            <div class="cart-panel">
+                <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">🛒 ตะกร้าสินค้า</h3>
+                <div id="cartItems" style="min-height: 150px; max-height: 400px; overflow-y: auto;">
+                    <p style="text-align:center; color:#ccc;">ยังไม่มีสินค้า</p>
+                </div>
+                <div style="font-size:1.5em; font-weight:bold; color:var(--primary); text-align:right; margin-top:15px;">
+                    รวม: <span id="cartTotal">0.00</span> บ.
+                </div>
+                
+                <hr style="border:0; border-top:1px dashed #ccc; margin: 15px 0;">
+                
+                <p style="font-size:0.8em; color:#666; margin-bottom:5px;">เลือกประเภทบิล:</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <button onclick="processCheckout('simple')" class="action-btn" style="background:#2E7D32; font-size:0.9em;">
+                        <i class="fas fa-receipt"></i> บิลเงินสด<br><small>(ธรรมดา)</small>
+                    </button>
+                    <button onclick="processCheckout('full')" class="action-btn" style="background:#1565C0; font-size:0.9em;">
+                        <i class="fas fa-file-invoice-dollar"></i> ใบกำกับภาษี<br><small>(ถูกต้องตามกฎหมาย)</small>
+                    </button>
+                </div>
+                <button onclick="processCheckout('quote')" class="action-btn" style="width:100%; background:#FF9800; margin-bottom:10px;">
+                    <i class="fas fa-file-invoice"></i> ใบเสนอราคา (ไม่ตัดของ)
+                </button>
+                <button onclick="clearCart()" class="delete-btn" style="width:100%;">ล้างรายการ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="stock-view" class="hidden">
         <div class="tab-menu">
-            <button class="tab-btn active" onclick="openPosTab('sales')">🛒 ขายสินค้า</button>
-            <button class="tab-btn" id="btnManageProduct" onclick="openPosTab('products')">📦 จัดการสินค้าขาย (Admin)</button>
+            <button class="tab-btn active" onclick="openStockTab('raw')">🧱 สต็อกวัตถุดิบ (Raw)</button>
+            <button class="tab-btn" onclick="openStockTab('finished')">🎁 สต็อกสินค้าขาย (Finished)</button>
         </div>
 
-        <div id="pos-sales" class="pos-content active">
-            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
-                <div>
-                    <div id="productGrid" class="product-grid">Loading...</div>
+        <div id="stock-raw" class="stock-content active">
+            <div class="card">
+                <h2>จัดการสต็อกวัตถุดิบ</h2>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 5px; align-items: start; margin-bottom:15px;">
+                    <input type="text" id="rawName" placeholder="ชื่อวัตถุดิบ (แป้ง, น้ำตาล)">
+                    <input type="number" id="rawPrice" placeholder="ทุนซื้อ">
+                    <input type="number" id="rawQty" placeholder="ปริมาณ">
+                    <input type="text" id="rawUnit" placeholder="หน่วย (กรัม, ถุง)">
+                    <button onclick="addRawStock()" class="action-btn">+ เพิ่ม</button>
                 </div>
-                <div class="cart-panel">
-                    <h3 style="margin-top:0; border-bottom:1px solid #eee; padding-bottom:10px;">รายการขาย</h3>
-                    
-                    <div style="background:#F9F9F9; padding:10px; border-radius:8px; margin-bottom:15px;">
-                        <div style="font-size:0.8em; font-weight:bold; margin-bottom:5px;">ข้อมูลลูกค้า (สำหรับออกบิล)</div>
-                        <input type="text" id="custName" placeholder="ชื่อลูกค้า / บริษัท" style="font-size:0.9em; padding:8px;">
-                        <input type="text" id="custTax" placeholder="เลขผู้เสียภาษี (ถ้ามี)" style="font-size:0.9em; padding:8px;">
-                        <input type="text" id="custAddr" placeholder="ที่อยู่" style="font-size:0.9em; padding:8px;">
-                    </div>
-
-                    <div id="cartItems">
-                        <p style="text-align:center; color:#ccc; margin-top:20px;">ยังไม่มีสินค้า</p>
-                    </div>
-                    <div class="cart-total">รวม: <span id="cartTotal">0.00</span> บ.</div>
-                    
-                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                        <button onclick="processCheckout('bill')" class="action-btn" style="width:100%; background:#2E7D32;"><i class="fas fa-print"></i> บันทึกยอด & พิมพ์ใบเสร็จ</button>
-                        <button onclick="processCheckout('quote')" class="action-btn" style="width:100%; background:#FF9800;"><i class="fas fa-file-invoice"></i> พิมพ์ใบเสนอราคา</button>
-                        <button onclick="clearCart()" class="delete-btn" style="width:100%;">ล้างรายการ</button>
-                    </div>
-                </div>
+                <input type="text" id="searchRaw" onkeyup="renderRawStock()" placeholder="🔍 ค้นหาวัตถุดิบ..." style="margin-bottom:10px;">
+                <table>
+                    <thead><tr><th>ชื่อวัตถุดิบ</th><th>คงเหลือ</th><th>ทุนเฉลี่ย</th><th style="text-align:center;">จัดการ</th></tr></thead>
+                    <tbody id="rawTable"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="pos-products" class="pos-content hidden">
+        <div id="stock-finished" class="stock-content hidden">
             <div class="card">
-                <h2>จัดการสต็อกสินค้าสำเร็จรูป (Finished Goods)</h2>
-                <div style="background:#FFF3E0; padding:10px; border-radius:8px; margin-bottom:10px; font-size:0.9em;">
-                    <i class="fas fa-info-circle"></i> <b>เคล็ดลับรูปภาพ:</b> สามารถนำลิงก์จาก Google Drive มาวางได้เลย ระบบจะแปลงให้เอง
+                <h2>จัดการสต็อกสินค้าสำหรับขาย (POS)</h2>
+                <div id="adminProductForm" class="hidden" style="background:#FFF3E0; padding:15px; border-radius:10px; margin-bottom:15px;">
+                    <div style="font-size:0.9em; margin-bottom:10px;"><b>เพิ่ม/แก้ไข สินค้า:</b> (ใส่ Link Google Drive ได้)</div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px;">
+                        <input type="text" id="prodName" placeholder="ชื่อสินค้า">
+                        <input type="number" id="prodPrice" placeholder="ราคาขาย">
+                        <input type="number" id="prodStock" placeholder="จำนวนในสต็อก">
+                    </div>
+                    <input type="text" id="prodImg" placeholder="Link รูปภาพ">
+                    <button onclick="addProduct()" class="action-btn" style="width:100%;">บันทึกสินค้า</button>
                 </div>
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-                    <input type="text" id="prodName" placeholder="ชื่อสินค้า">
-                    <input type="number" id="prodPrice" placeholder="ราคาขาย">
-                    <input type="number" id="prodStock" placeholder="จำนวนในสต็อก">
-                    <input type="text" id="prodImg" placeholder="Link รูปภาพ (Google Drive etc.)">
-                </div>
-                <button onclick="addProduct()" class="action-btn" style="width:100%; margin-bottom:20px;">+ เพิ่ม/อัปเดต สินค้า</button>
                 
+                <div id="adminProductWarning" style="color:red; text-align:center; padding:20px;">* เฉพาะ Admin เท่านั้นที่เพิ่มสินค้าได้ *</div>
+
                 <table>
-                    <thead><tr><th>รูป</th><th>ชื่อสินค้า</th><th>ราคา</th><th>คงเหลือ</th><th>จัดการ</th></tr></thead>
+                    <thead><tr><th>รูป</th><th>สินค้า</th><th>ราคาขาย</th><th>คงเหลือ</th><th style="text-align:center;">Admin</th></tr></thead>
                     <tbody id="productTable"></tbody>
                 </table>
             </div>
@@ -191,48 +220,20 @@
     </div>
 
     <div id="cost-view" class="hidden">
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="openTab('calculator')">สต็อกวัตถุดิบ</button>
-            <button class="tab-btn" onclick="openTab('history')">ประวัติการผลิต</button>
-        </div>
-
-        <div id="calculator" class="tab-content active">
-            <div class="card">
-                <h2>1. คลังวัตถุดิบ (Raw Material Stock)</h2>
-                <p style="font-size:0.9em; color:#666;">บันทึกการซื้อเข้า และเบิกใช้วัตถุดิบจริงที่หน้างาน</p>
-                
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: 10px; align-items: end; margin-top:15px;">
-                    <input type="text" id="stockName" placeholder="ชื่อวัตถุดิบ (แป้ง, น้ำตาล)">
-                    <input type="number" id="stockPrice" placeholder="ราคาทุนซื้อมา">
-                    <input type="number" id="stockQty" placeholder="ปริมาณที่ซื้อ">
-                    <select id="stockUnit">
-                        <option value="" disabled selected>หน่วย</option>
-                        <option value="กรัม">กรัม (g)</option>
-                        <option value="กิโลกรัม">กิโลกรัม (kg)</option>
-                        <option value="มิลลิลิตร">มิลลิลิตร (ml)</option>
-                        <option value="ลิตร">ลิตร (l)</option>
-                        <option value="ชิ้น">ชิ้น</option>
-                        <option value="ฟอง">ฟอง</option>
-                        <option value="กล่อง">กล่อง</option>
-                        <option value="ถุง">ถุง</option>
-                    </select>
-                    <button onclick="addStock()" class="action-btn"><i class="fas fa-plus"></i> เพิ่มเข้าสต็อก</button>
-                </div>
-
-                <div style="margin-top:20px;">
-                    <input type="text" id="searchStockRaw" onkeyup="filterStockRaw()" placeholder="🔍 ค้นหาวัตถุดิบ..." style="margin-bottom:10px;">
-                    <table>
-                        <thead><tr><th>วัตถุดิบ</th><th>คงเหลือ</th><th>ทุนเฉลี่ย/หน่วย</th><th style="text-align:center;">จัดการ</th></tr></thead>
-                        <tbody id="stockTable"></tbody>
-                    </table>
-                </div>
+        <div class="card">
+            <h2>คำนวณต้นทุนสูตรอาหาร (ไม่ตัดสต็อก)</h2>
+            <div style="display: flex; gap: 10px; align-items: flex-end; margin-bottom: 15px;">
+                <div style="flex: 2;"><label style="font-size: 0.8em;">เลือกวัตถุดิบจากระบบ</label><select id="selectIngredient"></select></div>
+                <div style="flex: 1;"><label style="font-size: 0.8em;">ปริมาณใช้</label><input type="number" id="useQty"></div>
+                <button onclick="addToRecipe()" class="action-btn" style="flex: 1;">+ ใส่สูตร</button>
             </div>
-        </div>
-
-        <div id="history" class="tab-content">
-            <div class="card">
-                <button onclick="loadHistoryFromFirebase()" class="action-btn"><i class="fas fa-sync"></i> โหลดข้อมูล</button>
-                <div id="historyList" style="margin-top:10px;"></div>
+            <table>
+                <thead><tr><th>รายการ</th><th>ปริมาณ</th><th>รวมทุน</th><th>ลบ</th></tr></thead>
+                <tbody id="recipeTable"></tbody>
+            </table>
+            <div style="background: #FFF3E0; padding: 15px; border-radius: 10px; text-align: right; margin-top: 15px;">
+                <div style="font-size:1.5em; font-weight:bold; color:var(--primary);" id="recipeTotal">0.00</div>
+                <div style="font-size:0.9em; color:#666;">ต้นทุนรวมเฉพาะสูตรนี้</div>
             </div>
         </div>
     </div>
@@ -240,12 +241,12 @@
 
 <div id="shopSettingsModal" class="modal">
     <div class="modal-content">
-        <h2 style="color:var(--primary);">ตั้งค่าข้อมูลร้านค้า (สำหรับบิล)</h2>
+        <h2>ตั้งค่าข้อมูลร้านค้า (สำหรับบิล)</h2>
         <input type="text" id="shopName" placeholder="ชื่อร้านค้า">
         <textarea id="shopAddress" rows="3" placeholder="ที่อยู่ร้านค้า"></textarea>
-        <input type="text" id="shopTaxID" placeholder="เลขประจำตัวผู้เสียภาษี (ถ้ามี)">
+        <input type="text" id="shopTaxID" placeholder="เลขประจำตัวผู้เสียภาษี">
         <input type="text" id="shopPhone" placeholder="เบอร์โทรศัพท์">
-        <div style="margin-top:20px; display:flex; justify-content:flex-end; gap:10px;">
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
             <button onclick="saveShopSettings()" class="action-btn">บันทึก</button>
             <button onclick="document.getElementById('shopSettingsModal').style.display='none'" class="delete-btn">ปิด</button>
         </div>
@@ -254,57 +255,64 @@
 
 <div id="billModal" class="modal">
     <div class="modal-content bill-paper">
+        <div id="customerInputSection" class="no-print" style="margin-bottom:20px; background:#f5f5f5; padding:15px; border-radius:10px;">
+            <h3 style="margin-top:0;">กรอกข้อมูลลูกค้า (สำหรับใบกำกับภาษี)</h3>
+            <input type="text" id="custName" placeholder="ชื่อลูกค้า / บริษัท">
+            <input type="text" id="custAddr" placeholder="ที่อยู่">
+            <input type="text" id="custTax" placeholder="เลขประจำตัวผู้เสียภาษี (ถ้ามี)">
+            <button onclick="refreshBillDisplay()" class="action-btn" style="width:100%; margin-top:5px;">อัปเดตข้อมูลในบิล</button>
+        </div>
+
         <div id="printableArea">
             <div class="bill-header-row">
-                <div style="display:flex; align-items:flex-start;">
-                    <img src="พักกล่อง.png" class="bill-logo" id="billLogoImg" onerror="this.style.display='none'"> 
-                    <div class="bill-info">
-                        <b style="font-size:1.1em;" id="printShopName">ชื่อร้าน</b><br>
-                        <span id="printShopAddr">ที่อยู่...</span><br>
-                        <span id="printShopTax">เลขผู้เสียภาษี: -</span><br>
-                        <span id="printShopPhone">โทร: -</span>
+                <div style="display:flex;">
+                    <img src="พักกล่อง.png" class="bill-logo" onerror="this.style.display='none'">
+                    <div style="font-size:0.8em; line-height:1.4;">
+                        <b id="printShopName" style="font-size:1.1em;">ชื่อร้าน</b><br>
+                        <span id="printShopAddr">-</span><br>
+                        <span id="printShopPhone">โทร: -</span><br>
+                        <span id="printShopTax">เลขภาษี: -</span>
                     </div>
                 </div>
-                <div class="bill-title">
-                    <span id="docTitle">ใบเสร็จรับเงิน</span><br>
-                    <span style="font-size:0.6em; font-weight:normal;">(Receipt / Tax Invoice)</span>
+                <div style="text-align:right;">
+                    <b id="billTitle" style="font-size:1.2em;">ใบเสร็จรับเงิน</b><br>
+                    <span id="billSubtitle" style="font-size:0.7em;">(RECEIPT)</span>
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between; font-size:0.85em; margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8em; margin-bottom:10px;">
                 <div style="width:55%;">
-                    <b>ลูกค้า:</b> <span id="printCustName">-</span><br>
-                    <b>ที่อยู่:</b> <span id="printCustAddr">-</span><br>
-                    <b>เลขผู้เสียภาษี:</b> <span id="printCustTax">-</span>
+                    <b>ลูกค้า:</b> <span id="printCustName">ลูกค้าทั่วไป</span><br>
+                    <span id="printCustFullDetails" style="display:none;">
+                        <b>ที่อยู่:</b> <span id="printCustAddr">-</span><br>
+                        <b>เลขภาษี:</b> <span id="printCustTax">-</span>
+                    </span>
                 </div>
                 <div style="width:40%; text-align:right;">
-                    <b>เลขที่:</b> <span id="printInvNo">INV-XXXX</span><br>
-                    <b>วันที่:</b> <span id="printDate">DD/MM/YYYY</span><br>
-                    <b>เวลา:</b> <span id="printTime">HH:MM</span>
+                    <b>เลขที่:</b> <span id="printInvNo">INV-XXX</span><br>
+                    <b>วันที่:</b> <span id="printDate">DD/MM/YYYY HH:MM</span>
                 </div>
-            </div>
-            
-            <table class="bill-table">
-                <thead><tr><th>รายการ</th><th style="width:15%;">จำนวน</th><th style="width:20%;">ราคา/หน่วย</th><th style="width:20%;">รวม</th></tr></thead>
-                <tbody id="billItems"></tbody>
-            </table>
-            
-            <div class="bill-summary">
-                <div style="display:flex; justify-content:flex-end; gap:20px;">
-                    <span>รวมเป็นเงิน:</span>
-                    <span style="font-weight:bold; font-size:1.2em;" id="billGrandTotal">0.00</span>
-                </div>
-                <div style="font-size:0.8em; color:#666; margin-top:5px;">(ราคารวมภาษีมูลค่าเพิ่มแล้ว)</div>
             </div>
 
-            <div style="margin-top:30px; display:flex; justify-content:space-between; text-align:center; font-size:0.8em;">
-                <div style="width:45%; border-top:1px solid #ccc; padding-top:5px;">ผู้รับเงิน/ผู้ออกบิล</div>
-                <div style="width:45%; border-top:1px solid #ccc; padding-top:5px;">ผู้รับสินค้า</div>
+            <table class="bill-table-print">
+                <thead><tr><th>รายการ</th><th style="width:15%;">จำนวน</th><th style="width:20%;">หน่วยละ</th><th style="width:20%;">รวม</th></tr></thead>
+                <tbody id="billBody"></tbody>
+            </table>
+
+            <div style="text-align:right; margin-top:15px; font-size:0.9em;">
+                รวมเป็นเงิน: <b style="font-size:1.3em;" id="printTotal">0.00</b> บาท
+                <div style="font-size:0.8em; color:#666;">(ราคารวมภาษีมูลค่าเพิ่มแล้ว)</div>
+            </div>
+            
+            <div style="margin-top:30px; display:flex; justify-content:space-between; text-align:center; font-size:0.7em;">
+                <div style="width:40%; border-top:1px solid #ccc; padding-top:5px;">ผู้รับเงิน</div>
+                <div style="width:40%; border-top:1px solid #ccc; padding-top:5px;">ผู้รับสินค้า</div>
             </div>
         </div>
-        <div class="no-print" style="margin-top:20px; display:flex; gap:10px; justify-content:center;">
-            <button onclick="window.print()" class="action-btn"><i class="fas fa-print"></i> พิมพ์บิล</button>
-            <button onclick="closeModal()" class="delete-btn">ปิด</button>
+
+        <div class="no-print" style="margin-top:20px; display:flex; justify-content:center; gap:10px;">
+            <button onclick="confirmAndPrint()" class="action-btn"><i class="fas fa-print"></i> ยืนยัน & พิมพ์</button>
+            <button onclick="document.getElementById('billModal').style.display='none'" class="delete-btn">ปิด</button>
         </div>
     </div>
 </div>
@@ -313,11 +321,11 @@
     <div class="modal-content" style="max-width:300px;">
         <h3>เบิกใช้วัตถุดิบ</h3>
         <p id="withdrawTitle"></p>
-        <input type="number" id="withdrawQty" placeholder="ระบุจำนวนที่ใช้ไป">
+        <input type="number" id="withdrawAmount" placeholder="ระบุจำนวนที่เบิก">
         <input type="hidden" id="withdrawName">
         <input type="hidden" id="withdrawCurrent">
-        <div style="margin-top:15px; display:flex; gap:10px;">
-            <button onclick="confirmWithdraw()" class="action-btn" style="width:100%;">ยืนยันตัดสต็อก</button>
+        <div style="display:flex; gap:10px;">
+            <button onclick="confirmWithdraw()" class="action-btn" style="flex:1;">ยืนยัน</button>
             <button onclick="document.getElementById('withdrawModal').style.display='none'" class="delete-btn">ยกเลิก</button>
         </div>
     </div>
@@ -325,7 +333,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, increment, query, orderBy, Timestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, increment, getDoc, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -344,13 +352,12 @@
     const ADMIN_EMAIL = "pukklong.snackbox@gmail.com";
 
     let currentUser = null, isAdmin = false;
-    window.stockData = []; window.productData = []; window.cart = [];
+    window.rawStock = []; window.products = []; window.cart = []; window.recipe = [];
 
-    // --- Authentication ---
+    // --- AUTH ---
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            currentUser = user;
-            isAdmin = (user.email === ADMIN_EMAIL);
+            currentUser = user; isAdmin = (user.email === ADMIN_EMAIL);
             document.getElementById('userImg').src = user.photoURL;
             document.getElementById('userName').innerText = user.displayName;
             document.getElementById('login-section').classList.add('hidden');
@@ -358,15 +365,12 @@
             
             if(isAdmin) {
                 document.getElementById('roleBadge').style.display = 'inline-block';
-                document.getElementById('btnManageProduct').style.display = 'block';
                 document.getElementById('btnShopSettings').classList.remove('hidden');
-            } else {
-                document.getElementById('roleBadge').style.display = 'none';
-                document.getElementById('btnManageProduct').style.display = 'none';
-                document.getElementById('btnShopSettings').classList.add('hidden');
+                document.getElementById('adminProductForm').classList.remove('hidden');
+                document.getElementById('adminProductWarning').classList.add('hidden');
             }
-            
-            fetchStock();
+
+            fetchRawStock();
             fetchProducts();
         } else {
             document.getElementById('login-section').classList.remove('hidden');
@@ -377,7 +381,94 @@
     window.loginWithGoogle = () => signInWithPopup(auth, provider);
     window.logout = () => signOut(auth).then(() => location.reload());
 
-    // --- Utility: Convert Google Drive Link ---
+    // --- NAVIGATION ---
+    window.goHome = () => {
+        ['pos-view', 'stock-view', 'cost-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+        document.getElementById('dashboard-view').classList.remove('hidden');
+    };
+    window.openSystem = (sys) => {
+        document.getElementById('dashboard-view').classList.add('hidden');
+        if(sys === 'pos') { document.getElementById('pos-view').classList.remove('hidden'); renderPosGrid(); }
+        if(sys === 'stock') { document.getElementById('stock-view').classList.remove('hidden'); openStockTab('raw'); }
+        if(sys === 'cost') { document.getElementById('cost-view').classList.remove('hidden'); updateIngredientDropdown(); }
+    };
+    window.openStockTab = (t) => {
+        document.querySelectorAll('.stock-content').forEach(c => c.classList.remove('active')); // hide all
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); // reset buttons
+        
+        if(t === 'raw') { 
+            document.getElementById('stock-raw').classList.add('active');
+            document.querySelectorAll('#stock-view .tab-btn')[0].classList.add('active');
+        } else { 
+            document.getElementById('stock-finished').classList.add('active');
+            document.querySelectorAll('#stock-view .tab-btn')[1].classList.add('active');
+        }
+    };
+
+    // --- 1. STOCK SYSTEM (Raw & Finished) ---
+    async function fetchRawStock() {
+        const snap = await getDocs(collection(db, "global_stock"));
+        window.rawStock = [];
+        snap.forEach(d => window.rawStock.push(d.data()));
+        renderRawStock();
+    }
+    
+    window.addRawStock = async () => {
+        let n = document.getElementById('rawName').value, p = parseFloat(document.getElementById('rawPrice').value), q = parseFloat(document.getElementById('rawQty').value), u = document.getElementById('rawUnit').value;
+        if(n && p && q) {
+            const ref = doc(db, "global_stock", n);
+            const snap = await getDoc(ref);
+            if(snap.exists()) {
+                let old = snap.data();
+                let newQty = parseFloat(old.qty) + q;
+                let newPrice = parseFloat(old.price) + p;
+                await updateDoc(ref, { qty: newQty, price: newPrice, cp: newPrice/newQty });
+            } else {
+                await setDoc(ref, {name:n, price:p, qty:q, unit:u, cp:p/q});
+            }
+            fetchRawStock();
+            ['rawName','rawPrice','rawQty','rawUnit'].forEach(id=>document.getElementById(id).value='');
+        }
+    };
+
+    window.renderRawStock = () => {
+        let txt = document.getElementById('searchRaw').value.toLowerCase();
+        let tb = document.getElementById('rawTable'); tb.innerHTML = '';
+        window.rawStock.forEach(s => {
+            if(!s.name.toLowerCase().includes(txt)) return;
+            let del = isAdmin ? `<button onclick="deleteRaw('${s.name}')" class="delete-btn">ลบ</button>` : '';
+            tb.innerHTML += `<tr><td>${s.name}</td><td>${parseFloat(s.qty).toFixed(2)} ${s.unit}</td><td>${s.cp.toFixed(2)}</td><td style="text-align:center;"><button onclick="openWithdraw('${s.name}',${s.qty})" class="withdraw-btn">เบิก</button> ${del}</td></tr>`;
+        });
+    };
+
+    window.openWithdraw = (n, q) => {
+        document.getElementById('withdrawTitle').innerHTML = `<b>${n}</b> (มี ${q})`;
+        document.getElementById('withdrawName').value = n;
+        document.getElementById('withdrawCurrent').value = q;
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('withdrawModal').style.display = 'block';
+    };
+
+    window.confirmWithdraw = async () => {
+        let n = document.getElementById('withdrawName').value, q = parseFloat(document.getElementById('withdrawAmount').value);
+        let curr = parseFloat(document.getElementById('withdrawCurrent').value);
+        if(q > 0) {
+            await updateDoc(doc(db, "global_stock", n), { qty: curr - q });
+            document.getElementById('withdrawModal').style.display = 'none';
+            fetchRawStock();
+        }
+    };
+    window.deleteRaw = async (n) => { if(confirm('ลบ?')) { await deleteDoc(doc(db, "global_stock", n)); fetchRawStock(); } };
+
+    // --- Products (Finished Goods) ---
+    async function fetchProducts() {
+        const snap = await getDocs(collection(db, "products"));
+        window.products = [];
+        snap.forEach(d => window.products.push({id: d.id, ...d.data()}));
+        renderProductTable();
+        renderPosGrid();
+    }
+    
     function convertDriveLink(url) {
         if (url && url.includes('drive.google.com') && url.includes('/file/d/')) {
             let id = url.split('/file/d/')[1].split('/')[0];
@@ -386,285 +477,200 @@
         return url;
     }
 
-    // --- Shop Settings (Admin Only) ---
-    window.openShopSettings = async () => {
-        if(!isAdmin) return;
-        const docRef = doc(db, "settings", "shop_info");
-        const docSnap = await getDoc(docRef);
-        if(docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('shopName').value = data.name || '';
-            document.getElementById('shopAddress').value = data.address || '';
-            document.getElementById('shopTaxID').value = data.taxId || '';
-            document.getElementById('shopPhone').value = data.phone || '';
-        }
-        document.getElementById('shopSettingsModal').style.display = 'block';
-    };
-
-    window.saveShopSettings = async () => {
-        const info = {
-            name: document.getElementById('shopName').value,
-            address: document.getElementById('shopAddress').value,
-            taxId: document.getElementById('shopTaxID').value,
-            phone: document.getElementById('shopPhone').value
-        };
-        await setDoc(doc(db, "settings", "shop_info"), info);
-        alert("บันทึกข้อมูลร้านค้าแล้ว");
-        document.getElementById('shopSettingsModal').style.display = 'none';
-    };
-
-    // --- POS: Products (Finished Goods) ---
-    async function fetchProducts() {
-        const snap = await getDocs(collection(db, "products"));
-        window.productData = [];
-        snap.forEach(d => window.productData.push({id: d.id, ...d.data()}));
-        renderProductGrid();
-        if(isAdmin) renderProductTable();
-    }
-
     window.addProduct = async () => {
-        if(!isAdmin) return alert("Admin Only");
-        let name = document.getElementById('prodName').value;
-        let price = parseFloat(document.getElementById('prodPrice').value);
-        let stock = parseFloat(document.getElementById('prodStock').value);
-        let img = convertDriveLink(document.getElementById('prodImg').value);
-
-        if(name && price >= 0) {
-            await setDoc(doc(db, "products", name), { name, price, stock, img });
-            alert("บันทึกสินค้าเรียบร้อย");
+        if(!isAdmin) return;
+        let n = document.getElementById('prodName').value, p = parseFloat(document.getElementById('prodPrice').value), s = parseFloat(document.getElementById('prodStock').value), i = convertDriveLink(document.getElementById('prodImg').value);
+        if(n && p>=0) {
+            await setDoc(doc(db, "products", n), { name:n, price:p, stock:s, img:i });
             fetchProducts();
             ['prodName','prodPrice','prodStock','prodImg'].forEach(id=>document.getElementById(id).value='');
         }
     };
+    window.deleteProduct = async (id) => { if(confirm('ลบ?')) { await deleteDoc(doc(db, "products", id)); fetchProducts(); } };
+    
+    window.renderProductTable = () => {
+        let tb = document.getElementById('productTable'); tb.innerHTML = '';
+        window.products.forEach(p => {
+            tb.innerHTML += `<tr><td><img src="${p.img}" style="width:30px;"></td><td>${p.name}</td><td>${p.price}</td><td>${p.stock}</td><td style="text-align:center;">${isAdmin ? `<button onclick="deleteProduct('${p.id}')" class="delete-btn">ลบ</button>` : '-'}</td></tr>`;
+        });
+    };
 
-    window.renderProductGrid = () => {
-        let grid = document.getElementById('productGrid');
-        grid.innerHTML = '';
-        window.productData.forEach(p => {
+    // --- 2. POS SYSTEM & BILLING ---
+    window.renderPosGrid = () => {
+        let g = document.getElementById('posProductGrid'); g.innerHTML = '';
+        window.products.forEach(p => {
             let isOut = p.stock <= 0;
-            grid.innerHTML += `
-                <div class="product-item ${isOut ? 'out-of-stock' : ''}" onclick="addToCart('${p.id}')">
-                    <div class="stock-badge">${p.stock} ชิ้น</div>
-                    <img src="${p.img || 'https://via.placeholder.com/150'}" class="product-img" onerror="this.src='https://via.placeholder.com/150'">
-                    <div class="product-info">
-                        <div style="font-weight:bold; font-size:0.9em;">${p.name}</div>
-                        <div style="color:var(--primary);">${p.price} บ.</div>
-                    </div>
+            g.innerHTML += `
+                <div class="product-item ${isOut?'out-of-stock':''}" onclick="addToCart('${p.id}')">
+                    <div class="stock-badge">${p.stock}</div>
+                    <img src="${p.img||'https://via.placeholder.com/150'}" class="product-img">
+                    <div class="product-info"><b>${p.name}</b><br><span style="color:var(--primary)">${p.price} บ.</span></div>
                 </div>`;
         });
     };
 
-    window.renderProductTable = () => {
-        let tb = document.getElementById('productTable');
-        tb.innerHTML = '';
-        window.productData.forEach(p => {
-            tb.innerHTML += `
-                <tr>
-                    <td><img src="${p.img}" style="width:30px;"></td>
-                    <td>${p.name}</td>
-                    <td>${p.price}</td>
-                    <td>${p.stock}</td>
-                    <td><button onclick="deleteProduct('${p.id}')" class="delete-btn">ลบ</button></td>
-                </tr>`;
-        });
-    };
-
-    window.deleteProduct = async (id) => { if(confirm("ลบ?")) { await deleteDoc(doc(db, "products", id)); fetchProducts(); }};
-
-    // --- POS: Cart & Checkout ---
     window.addToCart = (id) => {
-        let p = window.productData.find(x => x.id === id);
+        let p = window.products.find(x => x.id === id);
         if(!p || p.stock <= 0) return;
         let exist = window.cart.find(x => x.id === id);
-        if(exist) {
-            if(exist.qty < p.stock) exist.qty++;
-        } else {
-            window.cart.push({...p, qty:1});
-        }
+        if(exist) { if(exist.qty < p.stock) exist.qty++; } else { window.cart.push({...p, qty:1}); }
         renderCart();
     };
-
     window.renderCart = () => {
-        let el = document.getElementById('cartItems'); el.innerHTML = '';
-        let total = 0;
+        let d = document.getElementById('cartItems'), t = 0; d.innerHTML = '';
         window.cart.forEach((c,i) => {
-            total += c.price * c.qty;
-            el.innerHTML += `
-                <div class="cart-item">
-                    <div><b>${c.name}</b> <small>(${c.qty} x ${c.price})</small></div>
-                    <div style="display:flex; gap:5px; align-items:center;">
-                        <span>${(c.price*c.qty).toFixed(2)}</span>
-                        <button onclick="removeFromCart(${i})" class="delete-btn" style="padding:2px 6px;">x</button>
-                    </div>
-                </div>`;
+            t += c.price * c.qty;
+            d.innerHTML += `<div class="cart-item"><div>${c.name} x${c.qty}</div><div style="display:flex;gap:5px;"><span>${(c.price*c.qty).toFixed(2)}</span><button onclick="window.cart.splice(${i},1);renderCart()" class="delete-btn" style="padding:0 5px;">x</button></div></div>`;
         });
-        document.getElementById('cartTotal').innerText = total.toFixed(2);
+        document.getElementById('cartTotal').innerText = t.toFixed(2);
     };
-    
-    window.removeFromCart = (i) => { window.cart.splice(i,1); renderCart(); };
-    window.clearCart = () => { window.cart=[]; renderCart(); };
+    window.clearCart = () => { window.cart = []; renderCart(); };
+
+    // BILL LOGIC
+    let currentBillType = 'simple'; // simple, full, quote
 
     window.processCheckout = async (type) => {
-        if(window.cart.length === 0) return alert("เลือกสินค้าก่อน");
+        if(window.cart.length === 0) return alert('ตะกร้าว่าง');
+        currentBillType = type;
         
-        // 1. Prepare Bill Info
-        const date = new Date();
-        const runNo = "INV-" + date.getFullYear() + (date.getMonth()+1).toString().padStart(2,'0') + date.getDate().toString().padStart(2,'0') + "-" + Math.floor(Math.random()*1000);
+        // Setup Modal UI based on Type
+        const custSection = document.getElementById('customerInputSection');
+        const title = document.getElementById('billTitle');
+        const sub = document.getElementById('billSubtitle');
         
-        // Load Shop Info
-        const shopSnap = await getDoc(doc(db, "settings", "shop_info"));
-        const shopInfo = shopSnap.exists() ? shopSnap.data() : {name:"พักกล่อง", address:"-", taxId:"-"};
-
-        // Render Modal
-        document.getElementById('docTitle').innerText = (type === 'bill') ? "ใบเสร็จรับเงิน/ใบกำกับภาษี" : "ใบเสนอราคา";
-        document.getElementById('printShopName').innerText = shopInfo.name;
-        document.getElementById('printShopAddr').innerText = shopInfo.address;
-        document.getElementById('printShopTax').innerText = "เลขผู้เสียภาษี: " + shopInfo.taxId;
-        document.getElementById('printShopPhone').innerText = "โทร: " + (shopInfo.phone || "-");
-
-        document.getElementById('printCustName').innerText = document.getElementById('custName').value || "ลูกค้าทั่วไป";
-        document.getElementById('printCustAddr').innerText = document.getElementById('custAddr').value || "-";
-        document.getElementById('printCustTax').innerText = document.getElementById('custTax').value || "-";
+        if(type === 'simple') {
+            custSection.style.display = 'none';
+            title.innerText = "บิลเงินสด (อย่างย่อ)";
+            sub.innerText = "(CASH BILL)";
+        } else if (type === 'full') {
+            custSection.style.display = 'block';
+            title.innerText = "ใบกำกับภาษี / ใบเสร็จรับเงิน";
+            sub.innerText = "(TAX INVOICE / RECEIPT)";
+        } else {
+            custSection.style.display = 'block';
+            title.innerText = "ใบเสนอราคา";
+            sub.innerText = "(QUOTATION)";
+        }
         
-        document.getElementById('printInvNo').innerText = (type==='bill') ? runNo : "QT-Temp";
-        document.getElementById('printDate').innerText = date.toLocaleDateString('th-TH');
-        document.getElementById('printTime').innerText = date.toLocaleTimeString('th-TH');
-
-        let tbody = document.getElementById('billItems'); tbody.innerHTML = '';
-        let total = 0;
-        window.cart.forEach(c => {
-            total += c.qty * c.price;
-            tbody.innerHTML += `<tr><td>${c.name}</td><td>${c.qty}</td><td>${c.price.toFixed(2)}</td><td>${(c.qty*c.price).toFixed(2)}</td></tr>`;
-        });
-        document.getElementById('billGrandTotal').innerText = total.toFixed(2) + " บาท";
+        await loadShopInfoAndRenderBill();
         document.getElementById('billModal').style.display = 'block';
+    };
 
-        // 2. Save & Cut Stock (If Bill)
-        if(type === 'bill') {
+    async function loadShopInfoAndRenderBill() {
+        const date = new Date();
+        const runNo = "INV-" + date.getFullYear() + (date.getMonth()+1) + date.getDate() + "-" + Math.floor(Math.random()*1000);
+        
+        const snap = await getDoc(doc(db, "settings", "shop_info"));
+        const s = snap.exists() ? snap.data() : {name:"พักกล่อง", address:"-", taxId:"-"};
+
+        document.getElementById('printShopName').innerText = s.name;
+        document.getElementById('printShopAddr').innerText = s.address;
+        document.getElementById('printShopTax').innerText = "เลขภาษี: " + s.taxId;
+        document.getElementById('printShopPhone').innerText = "โทร: " + (s.phone || "-");
+
+        document.getElementById('printInvNo').innerText = currentBillType === 'quote' ? "QT-TEMP" : runNo;
+        document.getElementById('printDate').innerText = date.toLocaleString('th-TH');
+
+        window.refreshBillDisplay();
+    }
+
+    window.refreshBillDisplay = () => {
+        // Customer Details
+        if(currentBillType === 'simple') {
+            document.getElementById('printCustName').innerText = "ลูกค้าทั่วไป (Cash Sale)";
+            document.getElementById('printCustFullDetails').style.display = 'none';
+        } else {
+            document.getElementById('printCustName').innerText = document.getElementById('custName').value || "-";
+            document.getElementById('printCustAddr').innerText = document.getElementById('custAddr').value || "-";
+            document.getElementById('printCustTax').innerText = document.getElementById('custTax').value || "-";
+            document.getElementById('printCustFullDetails').style.display = 'block';
+        }
+
+        // Items
+        let tb = document.getElementById('billBody'), t = 0; tb.innerHTML = '';
+        window.cart.forEach(c => {
+            t += c.price * c.qty;
+            tb.innerHTML += `<tr><td>${c.name}</td><td>${c.qty}</td><td>${c.price.toFixed(2)}</td><td>${(c.price*c.qty).toFixed(2)}</td></tr>`;
+        });
+        document.getElementById('printTotal').innerText = t.toFixed(2);
+    };
+
+    window.confirmAndPrint = async () => {
+        window.print();
+        
+        // Save & Deduct Stock (Unless Quote)
+        if(currentBillType !== 'quote') {
             try {
                 await addDoc(collection(db, "sales"), {
                     items: window.cart,
-                    total: total,
+                    total: parseFloat(document.getElementById('printTotal').innerText),
+                    type: currentBillType,
                     date: Timestamp.now(),
-                    invoiceNo: runNo,
-                    customer: {
+                    customer: currentBillType === 'full' ? {
                         name: document.getElementById('custName').value,
                         taxId: document.getElementById('custTax').value
-                    }
+                    } : 'Cash'
                 });
-                
-                // Cut Stock
+
+                // Deduct Stock
                 for(const item of window.cart) {
                     await updateDoc(doc(db, "products", item.id), { stock: increment(-item.qty) });
                 }
                 
-                fetchProducts();
-                window.cart = []; renderCart(); // Clear cart after saved
-                // Reset inputs
-                ['custName','custTax','custAddr'].forEach(id=>document.getElementById(id).value='');
-            } catch(e) { alert("Error saving bill: " + e.message); }
+                // Clear & Close
+                window.cart = []; renderCart(); fetchProducts();
+                setTimeout(() => { document.getElementById('billModal').style.display = 'none'; }, 1000);
+            } catch(e) { alert("Error saving: " + e.message); }
         }
     };
 
-    window.closeModal = () => document.getElementById('billModal').style.display = 'none';
-
-    // --- Raw Material Stock (Ingredients) ---
-    async function fetchStock() {
-        const snap = await getDocs(collection(db, "global_stock"));
-        window.stockData = [];
-        snap.forEach(d => window.stockData.push(d.data()));
-        renderStockTable();
-    }
-
-    window.addStock = async () => {
-        let n = document.getElementById('stockName').value;
-        let p = parseFloat(document.getElementById('stockPrice').value);
-        let q = parseFloat(document.getElementById('stockQty').value);
-        let u = document.getElementById('stockUnit').value;
-        if(n && p && q) {
-            // Check existing
-            const ref = doc(db, "global_stock", n);
-            const snap = await getDoc(ref);
-            if(snap.exists()) {
-                // Add qty to existing
-                let old = snap.data();
-                let newQty = parseFloat(old.qty) + q;
-                let newPrice = parseFloat(old.price) + p; // Simple accumulation
-                await updateDoc(ref, { qty: newQty, price: newPrice, cp: newPrice/newQty });
-            } else {
-                await setDoc(ref, {name:n, price:p, qty:q, unit:u, cp:p/q});
-            }
-            fetchStock();
-            ['stockName','stockPrice','stockQty','stockUnit'].forEach(id=>document.getElementById(id).value='');
-        }
-    };
-
-    window.renderStockTable = () => {
-        let filter = document.getElementById('searchStockRaw').value.toLowerCase();
-        let tb = document.getElementById('stockTable'); tb.innerHTML = '';
-        
-        window.stockData.forEach((s) => {
-            if(!s.name.toLowerCase().includes(filter)) return;
-            let delBtn = isAdmin ? `<button onclick="deleteStockRaw('${s.name}')" class="delete-btn"><i class="fas fa-trash"></i></button>` : '';
-            tb.innerHTML += `
-                <tr>
-                    <td><b>${s.name}</b></td>
-                    <td style="color:${s.qty < 5 ? 'red' : 'green'};">${parseFloat(s.qty).toFixed(2)} ${s.unit}</td>
-                    <td>${s.cp.toFixed(2)}</td>
-                    <td style="text-align:center;">
-                        <button onclick="openWithdraw('${s.name}', ${s.qty}, '${s.unit}')" class="withdraw-btn">เบิกใช้</button>
-                        ${delBtn}
-                    </td>
-                </tr>`;
+    // --- 3. COST CALCULATOR (Pure Logic) ---
+    window.updateIngredientDropdown = () => {
+        let s = document.getElementById('selectIngredient'); s.innerHTML = '<option value="">-- เลือกวัตถุดิบ --</option>';
+        window.rawStock.forEach((r, i) => {
+            s.innerHTML += `<option value="${i}">${r.name} (ทุน: ${r.cp.toFixed(2)})</option>`;
         });
     };
-    window.filterStockRaw = renderStockTable;
-
-    // ระบบเบิกใช้วัตถุดิบ
-    window.openWithdraw = (name, qty, unit) => {
-        document.getElementById('withdrawTitle').innerHTML = `กำลังตัดสต็อก: <b>${name}</b><br>คงเหลือ: ${qty} ${unit}`;
-        document.getElementById('withdrawName').value = name;
-        document.getElementById('withdrawCurrent').value = qty;
-        document.getElementById('withdrawQty').value = '';
-        document.getElementById('withdrawModal').style.display = 'block';
-    };
-
-    window.confirmWithdraw = async () => {
-        let name = document.getElementById('withdrawName').value;
-        let current = parseFloat(document.getElementById('withdrawCurrent').value);
-        let used = parseFloat(document.getElementById('withdrawQty').value);
-        
-        if(used > 0) {
-            let newQty = current - used;
-            await updateDoc(doc(db, "global_stock", name), { qty: newQty });
-            alert(`บันทึกการใช้ ${name} จำนวน ${used} เรียบร้อย`);
-            document.getElementById('withdrawModal').style.display = 'none';
-            fetchStock();
-        } else {
-            alert("กรุณากรอกจำนวนที่ใช้");
+    
+    window.addToRecipe = () => {
+        let idx = document.getElementById('selectIngredient').value;
+        let q = parseFloat(document.getElementById('useQty').value);
+        if(idx !== "" && q > 0) {
+            let item = window.rawStock[idx];
+            window.recipe.push({ name: item.name, qty: q, cost: item.cp * q });
+            renderRecipe();
         }
     };
 
-    window.deleteStockRaw = async (n) => { if(confirm("ลบวัตถุดิบ "+n+"?")) { await deleteDoc(doc(db, "global_stock", n)); fetchStock(); }};
+    function renderRecipe() {
+        let tb = document.getElementById('recipeTable'), t = 0; tb.innerHTML = '';
+        window.recipe.forEach((r, i) => {
+            t += r.cost;
+            tb.innerHTML += `<tr><td>${r.name}</td><td>${r.qty}</td><td>${r.cost.toFixed(2)}</td><td><button onclick="window.recipe.splice(${i},1);renderRecipe()">ลบ</button></td></tr>`;
+        });
+        document.getElementById('recipeTotal').innerText = t.toFixed(2);
+    }
 
-    // Navigation
-    window.goHome = () => { document.getElementById('dashboard-view').classList.remove('hidden'); document.getElementById('pos-view').classList.add('hidden'); document.getElementById('cost-view').classList.add('hidden'); };
-    window.openSystem = (sys) => {
-        document.getElementById('dashboard-view').classList.add('hidden');
-        if(sys==='pos') { document.getElementById('pos-view').classList.remove('hidden'); openPosTab('sales'); }
-        else { document.getElementById('cost-view').classList.remove('hidden'); openTab('calculator'); }
+    // --- Settings ---
+    window.openShopSettings = async () => {
+        const snap = await getDoc(doc(db, "settings", "shop_info"));
+        if(snap.exists()) {
+            let d = snap.data();
+            document.getElementById('shopName').value = d.name;
+            document.getElementById('shopAddress').value = d.address;
+            document.getElementById('shopTaxID').value = d.taxId;
+            document.getElementById('shopPhone').value = d.phone;
+        }
+        document.getElementById('shopSettingsModal').style.display = 'block';
     };
-    window.openPosTab = (t) => {
-        document.querySelectorAll('.pos-content').forEach(c=>c.classList.add('hidden'));
-        document.querySelectorAll('#pos-view .tab-btn').forEach(b=>b.classList.remove('active'));
-        if(t==='sales') { document.getElementById('pos-sales').classList.remove('hidden'); document.querySelectorAll('#pos-view .tab-btn')[0].classList.add('active'); }
-        if(t==='products') { if(!isAdmin) return alert("Admin Only"); document.getElementById('pos-products').classList.remove('hidden'); document.querySelectorAll('#pos-view .tab-btn')[1].classList.add('active'); }
-    };
-    window.openTab = (t) => {
-         document.querySelectorAll('#cost-view .tab-content').forEach(c=>c.classList.remove('active'));
-         document.querySelectorAll('#cost-view .tab-btn').forEach(b=>b.classList.remove('active'));
-         document.getElementById(t).classList.add('active');
-         if(event) event.target.classList.add('active');
+    window.saveShopSettings = async () => {
+        await setDoc(doc(db, "settings", "shop_info"), {
+            name: document.getElementById('shopName').value,
+            address: document.getElementById('shopAddress').value,
+            taxId: document.getElementById('shopTaxID').value,
+            phone: document.getElementById('shopPhone').value
+        });
+        document.getElementById('shopSettingsModal').style.display = 'none';
     };
 
 </script>
