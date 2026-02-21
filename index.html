@@ -3,56 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พักกล่อง - ระบบจัดการร้าน (Admin Edition)</title>
+    <title>พักกล่อง - ระบบจัดการร้านแบบครบวงจร</title>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; --green: #2E7D32; --red: #C62828; }
+        :root { --primary: #5D4037; --secondary: #8D6E63; --bg: #FDF5E6; --white: #ffffff; --accent: #A1887F; --yellow: #FFA000; --green: #2E7D32; --red: #C62828; --blue: #1976D2; }
         body { font-family: 'Sarabun', sans-serif; background: var(--bg); margin: 0; padding: 15px; color: #4E342E; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
         .hidden { display: none !important; }
         
         /* Auth & Layout */
         .auth-bar { background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
         .user-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); }
-        .action-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .action-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .action-btn:hover { opacity: 0.8; }
         .btn-logout { background: #FFCDD2; color: #C62828; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; }
 
-        /* Tables & UI Components */
-        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; width: 100%; box-sizing: border-box; margin-bottom: 5px; font-family: 'Sarabun'; }
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; margin-top: 10px; font-size: 0.9em; }
-        th { background: #f4f4f4; padding: 12px 10px; text-align: left; color: #666; border-bottom: 2px solid #eee; }
-        td { padding: 12px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        /* Navigation Tabs */
+        .main-nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        .nav-item { padding: 12px 20px; background: white; border-radius: 12px; cursor: pointer; font-weight: bold; color: var(--secondary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); white-space: nowrap; }
+        .nav-item.active { background: var(--primary); color: white; }
 
-        /* Admin Buttons (Match Image) */
-        .btn-edit { background: #FFF9C4; color: #FBC02D; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; margin-bottom: 5px; }
-        .btn-del { background: #FFEBEE; color: #D32F2F; border: none; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; }
+        /* UI Components */
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        input, select, textarea { padding: 10px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; margin-bottom: 10px; font-family: 'Sarabun'; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #F5F5F5; padding: 12px; text-align: left; border-bottom: 2px solid #EEE; font-size: 0.9em; }
+        td { padding: 12px; border-bottom: 1px solid #EEE; font-size: 0.9em; }
 
-        /* Dashboard */
-        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 40px; }
-        .menu-card { background: white; padding: 40px; border-radius: 20px; text-align: center; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .menu-card:hover { transform: translateY(-5px); border: 2px solid var(--primary); }
-        .menu-card i { font-size: 4em; color: var(--primary); margin-bottom: 20px; }
+        /* POS Style */
+        .pos-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .product-card { background: white; border-radius: 12px; overflow: hidden; cursor: pointer; position: relative; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .product-card:hover { border-color: var(--primary); }
+        .product-img { width: 100%; height: 120px; object-fit: cover; background: #EEE; }
+        .stock-tag { position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; font-size: 0.7em; padding: 2px 6px; border-radius: 5px; }
 
-        /* Tab System */
-        .tab-menu { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 12px; background: #EFEBE9; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--secondary); }
-        .tab-btn.active { background: var(--primary); color: white; }
+        /* Admin Buttons */
+        .btn-edit { color: var(--yellow); cursor: pointer; margin-right: 10px; }
+        .btn-del { color: var(--red); cursor: pointer; }
 
-        /* Detailed History Specifics (Match Image) */
-        .ing-detail-row { font-size: 0.85em; color: #666; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dotted #ddd; }
-        .ing-sub-text { font-size: 0.8em; color: #999; display: block; }
-        .cost-summary-box { background: #F1F8E9; padding: 10px; border-radius: 8px; text-align: center; height: 100%; display: flex; flex-direction: column; justify-content: center; }
-        .yield-badge { background: #FFE0B2; color: #E65100; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; }
+        /* Billing Modal */
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); overflow-y: auto; }
+        .modal-content { background: white; margin: 2% auto; padding: 30px; width: 90%; max-width: 600px; border-radius: 10px; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body>
 
-<div id="login-section" style="text-align:center; padding-top:100px;">
-    <div style="background:white; padding:40px; border-radius:20px; display:inline-block; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-        <h2>ระบบจัดการร้าน พักกล่อง</h2>
-        <button onclick="loginWithGoogle()" class="action-btn" style="background:#4285F4;"><i class="fab fa-google"></i> Login Google</button>
+<div id="login-section" style="text-align:center; padding-top:150px;">
+    <div class="card" style="display:inline-block; width: 350px;">
+        <h2 style="color:var(--primary);">ระบบจัดการ พักกล่อง</h2>
+        <button onclick="loginWithGoogle()" class="action-btn" style="background:#4285F4; width:100%;">
+            <i class="fab fa-google"></i> เข้าสู่ระบบด้วย Google
+        </button>
     </div>
 </div>
 
@@ -62,103 +73,173 @@
             <img id="userImg" class="user-img">
             <div><b id="userName">User</b> <span id="roleBadge" style="background:red; color:white; font-size:0.7em; padding:2px 5px; border-radius:5px; display:none;">ADMIN</span></div>
         </div>
-        <div>
-            <button onclick="goHome()" class="action-btn" style="background:#8D6E63;">หน้าหลัก</button>
-            <button onclick="logout()" class="btn-logout">ออกระบบ</button>
-        </div>
+        <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
     </div>
 
-    <div id="dashboard-view">
-        <div class="dashboard-grid">
-            <div class="menu-card" onclick="openSystem('pos')"><i class="fas fa-store"></i><h2>ระบบการขาย (POS)</h2></div>
-            <div class="menu-card" onclick="openSystem('cost')"><i class="fas fa-calculator"></i><h2>ระบบคำนวณต้นทุน</h2></div>
-        </div>
+    <div class="main-nav">
+        <div class="nav-item active" onclick="switchView('pos', this)"><i class="fas fa-cash-register"></i> ระบบการขาย</div>
+        <div class="nav-item" onclick="switchView('cost', this)"><i class="fas fa-calculator"></i> คำนวณต้นทุน</div>
+        <div class="nav-item admin-only" onclick="switchView('inventory', this)"><i class="fas fa-boxes"></i> สต็อกวัตถุดิบ/สินค้า</div>
+        <div class="nav-item admin-only" onclick="switchView('reports', this)"><i class="fas fa-chart-line"></i> รายงานสรุป</div>
     </div>
 
-    <div id="cost-view" class="hidden">
-        <h2 style="color:var(--primary); border-bottom:2px solid var(--secondary);">📋 ระบบคำนวณต้นทุน & วัตถุดิบ</h2>
-        <div class="tab-menu">
-            <button class="tab-btn active" onclick="openCalcTab('calc')">คำนวณต้นทุน</button>
-            <button class="tab-btn" onclick="openCalcTab('saved')">ประวัติและสูตรทั้งหมด</button>
-        </div>
-
-        <div id="calc-main" class="calc-tab active">
-            <div style="background:#FFF8E1; padding:20px; border-radius:15px; margin-bottom:20px; border:1px solid #FFE0B2;">
-                <h3>1. คลังราคากลางวัตถุดิบ</h3>
-                <div id="mat-form" style="display:none; gap:5px; margin-bottom:15px;">
-                    <input type="hidden" id="matId">
-                    <input type="text" id="matName" placeholder="ชื่อวัตถุดิบ">
-                    <input type="number" id="matPrice" placeholder="ราคาที่ซื้อ">
-                    <input type="number" id="matQty" placeholder="ปริมาณที่ได้">
-                    <select id="matUnit" style="width:120px;">
-                        <option value="กรัม">กรัม</option>
-                        <option value="มล.">มล.</option>
-                        <option value="ชิ้น">ชิ้น</option>
-                        <option value="ฟอง">ฟอง</option>
-                    </select>
-                    <button onclick="saveMaterial()" class="action-btn">บันทึก</button>
+    <div id="view-pos" class="view-section">
+        <div class="pos-container">
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                    <h3>รายการสินค้า</h3>
+                    <input type="text" id="posSearch" placeholder="ค้นหาสินค้า..." style="width:250px; margin-bottom:0;" oninput="renderPOS()">
                 </div>
-                <div style="background:white; border-radius:10px; max-height: 250px; overflow-y: auto;">
-                    <table>
-                        <thead><tr><th>ลำดับ</th><th>วัตถุดิบ</th><th>ราคาซื้อ</th><th>ทุน/หน่วย</th><th id="matAdminTh" style="display:none;">Admin</th></tr></thead>
-                        <tbody id="matTable"></tbody>
-                    </table>
+                <div id="posGrid" class="product-grid"></div>
+            </div>
+            <div class="card">
+                <h3>ตะกร้าสินค้า</h3>
+                <div id="cartItems" style="min-height: 200px; border-bottom: 1px dashed #DDD;"></div>
+                <div style="text-align:right; margin: 20px 0;">
+                    <small>ยอดรวมทั้งหมด</small>
+                    <div id="cartTotal" style="font-size:2em; font-weight:bold; color:var(--primary);">0.00</div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <button onclick="openCheckout('receipt')" class="action-btn" style="background:var(--green);">ออกใบเสร็จ</button>
+                    <button onclick="openCheckout('quotation')" class="action-btn" style="background:var(--blue);">ใบเสนอราคา</button>
+                </div>
+                <button onclick="clearCart()" style="width:100%; margin-top:10px; background:#EEE; color:#666; border:none; padding:8px; border-radius:8px; cursor:pointer;">ล้างตะกร้า</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-cost" class="view-section hidden">
+        <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:20px;">
+            <div class="card">
+                <h3>1. ตั้งค่าวัตถุดิบ (ราคากลาง)</h3>
+                <div class="admin-only" style="background:#F9F9F9; padding:15px; border-radius:10px; margin-bottom:15px;">
+                    <input type="hidden" id="costMatId">
+                    <input type="text" id="costMatName" placeholder="ชื่อวัตถุดิบ">
+                    <div style="display:flex; gap:5px;">
+                        <input type="number" id="costMatPrice" placeholder="ราคาที่ซื้อ">
+                        <input type="number" id="costMatQty" placeholder="ปริมาณ">
+                        <select id="costMatUnit" style="width:100px;">
+                            <option value="กรัม">กรัม</option>
+                            <option value="มล.">มล.</option>
+                            <option value="ชิ้น">ชิ้น</option>
+                        </select>
+                    </div>
+                    <button onclick="saveCostMaterial()" class="action-btn" style="width:100%;">บันทึกวัตถุดิบ</button>
+                </div>
+                <div style="max-height:400px; overflow-y:auto;">
+                    <table id="costMatTable"></table>
                 </div>
             </div>
-
-            <div style="background:white; padding:20px; border-radius:15px; border:1px solid #ddd;">
-                <h3>2. ผสมสูตร</h3>
-                <div style="display:flex; gap:10px; align-items:flex-end; background:#f9f9f9; padding:15px; border-radius:10px;">
-                    <div style="flex:2;"><label>เลือกวัตถุดิบ</label><select id="selectMat"></select></div>
-                    <div style="flex:1;"><label>ใช้ไป</label><input type="number" id="useQty" placeholder="0"></div>
-                    <button onclick="addToRecipe()" class="action-btn" style="background:#6D4C41;">+ ใส่หม้อ</button>
+            <div class="card">
+                <h3>2. ผสมสูตร & คำนวณ</h3>
+                <div style="display:flex; gap:10px; background:#EEE; padding:15px; border-radius:10px;">
+                    <select id="selectRecipeMat" style="margin-bottom:0;"></select>
+                    <input type="number" id="recipeUseQty" placeholder="ใช้เท่าไหร่?" style="width:120px; margin-bottom:0;">
+                    <button onclick="addToRecipe()" class="action-btn" style="background:var(--primary); white-space:nowrap;">+ ใส่สูตร</button>
                 </div>
-                <table>
-                    <thead><tr><th>รายการ</th><th>ใช้ไป</th><th>ทุน</th><th>ลบ</th></tr></thead>
-                    <tbody id="recipeTable"></tbody>
-                </table>
-                <div style="background:#E0F2F1; padding:15px; margin-top:15px; text-align:right; border-radius:10px;">
-                    <div style="font-size:1.2em;">ต้นทุนรวม: <b id="currentTotal" style="color:var(--green);">0.00</b> บ.</div>
+                <table id="currentRecipeTable"></table>
+                <div style="background:var(--green-soft); padding:20px; margin-top:20px; border-radius:10px; text-align:right;">
+                    <div style="font-size:1.2em;">ต้นทุนรวม: <b id="recipeTotalCost" style="color:var(--green);">0.00</b> บ.</div>
                     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
-                        <input type="number" id="yield" placeholder="ทำได้กี่ชิ้น?" style="width:100px;">
-                        <input type="text" id="recipeName" placeholder="ชื่อเมนู" style="width:200px;">
-                        <button onclick="saveRecipe()" class="action-btn" style="background:var(--green);">💾 บันทึกสูตร</button>
+                        <input type="number" id="recipeYield" placeholder="ได้กี่ชิ้น?" style="width:100px; margin-bottom:0;">
+                        <input type="text" id="recipeMenuName" placeholder="ชื่อเมนู" style="width:200px; margin-bottom:0;">
+                        <button onclick="saveFinalRecipe()" class="action-btn">💾 บันทึกสูตร</button>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div id="calc-saved" class="calc-tab hidden">
-            <div style="background:white; padding:10px; border-radius:10px; overflow-x: auto;">
-                <div style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
-                    <h3 style="margin:0;">🗒 ประวัติการคำนวณแบบละเอียด</h3>
-                    <button onclick="fetchSavedRecipes()" class="action-btn" style="background:#8D6E63; font-size:0.8em;"><i class="fas fa-sync"></i> อัปเดตราคา</button>
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th width="15%">วันที่ / เวลา</th>
-                            <th width="15%">เมนู / ผลผลิต</th>
-                            <th width="45%">รายละเอียดวัตถุดิบ (ราคาล่าสุด)</th>
-                            <th width="15%" style="text-align:center;">สรุปต้นทุน</th>
-                            <th width="10%" style="text-align:center;">Admin</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyDetailedTable"></tbody>
-                </table>
+    <div id="view-inventory" class="view-section hidden">
+        <div class="card">
+            <h3>จัดการสินค้าที่ขาย (Finished Goods)</h3>
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr) auto; gap:5px; margin-bottom:15px;">
+                <input type="hidden" id="prodId">
+                <input type="text" id="prodName" placeholder="ชื่อสินค้า">
+                <input type="number" id="prodPrice" placeholder="ราคาขาย">
+                <input type="number" id="prodStock" placeholder="สต็อกคงเหลือ">
+                <input type="text" id="prodImg" placeholder="Link รูปภาพ">
+                <button onclick="saveProduct()" class="action-btn">บันทึก</button>
             </div>
+            <table id="adminProdTable"></table>
+        </div>
+        <div class="card">
+            <h3>สต็อกวัตถุดิบในร้าน (Store Stock)</h3>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr) auto; gap:5px; margin-bottom:15px;">
+                <input type="hidden" id="invId">
+                <input type="text" id="invName" placeholder="ชื่อวัตถุดิบ">
+                <input type="number" id="invQty" placeholder="ปริมาณคงเหลือ">
+                <input type="text" id="invUnit" placeholder="หน่วย">
+                <button onclick="saveInventory()" class="action-btn">บันทึก</button>
+            </div>
+            <table id="adminInvTable"></table>
         </div>
     </div>
 
-    <div id="pos-view" class="hidden"><h2>ระบบการขายกำลังพัฒนา...</h2><button onclick="goHome()">กลับ</button></div>
+    <div id="view-reports" class="view-section hidden">
+        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; margin-bottom:20px;">
+            <div class="card" style="text-align:center; background:#E8F5E9;">
+                <small>ยอดขายวันนี้</small>
+                <h2 id="reportTodayTotal" style="color:var(--green); margin:5px 0;">0.00</h2>
+            </div>
+            <div class="card" style="text-align:center; background:#E3F2FD;">
+                <small>จำนวนออเดอร์วันนี้</small>
+                <h2 id="reportTodayOrders" style="color:var(--blue); margin:5px 0;">0</h2>
+            </div>
+            <div class="card" style="text-align:center; background:#FFF3E0;">
+                <small>ยอดขายรวมทั้งหมด</small>
+                <h2 id="reportGrandTotal" style="color:var(--yellow); margin:5px 0;">0.00</h2>
+            </div>
+        </div>
+        <div class="card">
+            <h3>ประวัติการทำรายการ</h3>
+            <table id="salesHistoryTable"></table>
+        </div>
+    </div>
+</div>
+
+<div id="checkoutModal" class="modal">
+    <div class="modal-content">
+        <div id="printArea">
+            <div style="text-align:center; margin-bottom:20px;">
+                <h2 id="billHeader">ใบเสร็จรับเงิน</h2>
+                <p><b>ร้านพักกล่อง Puk-Klong</b><br>123 ถนนตัวอย่าง ต.ในเมือง อ.เมือง จ.พิษณุโลก</p>
+            </div>
+            <div style="margin-bottom:10px;">
+                <span id="billDate"></span> | เลขที่: <span id="billNo"></span>
+            </div>
+            <div id="customerInfo" class="no-print" style="margin-bottom:15px;">
+                <input type="text" id="billCustName" placeholder="ชื่อลูกค้า (ถ้ามี)">
+                <textarea id="billCustAddr" placeholder="ที่อยู่ลูกค้า"></textarea>
+            </div>
+            <div id="billPrintCust" style="display:none; margin-bottom:15px;"></div>
+            <table style="width:100%; border-top:1px solid #000;">
+                <thead><tr><th>รายการ</th><th align="right">จำนวน</th><th align="right">ราคา</th><th align="right">รวม</th></tr></thead>
+                <tbody id="billItems"></tbody>
+            </table>
+            <div style="text-align:right; margin-top:20px; font-size:1.5em; border-top:1px solid #000; padding-top:10px;">
+                รวมทั้งสิ้น: <span id="billGrandTotal">0.00</span> บาท
+            </div>
+            <div style="margin-top:40px; text-align:center; font-size:0.8em;">ขอบคุณที่ใช้บริการ</div>
+        </div>
+        <div class="no-print" style="margin-top:20px; display:flex; gap:10px;">
+            <button id="btnConfirmSale" onclick="confirmTransaction()" class="action-btn" style="flex:1; background:var(--green);">ยืนยันและพิมพ์</button>
+            <button onclick="document.getElementById('checkoutModal').style.display='none'" class="action-btn" style="flex:1; background:#666;">ปิด</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, increment, query, orderBy, Timestamp, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, setDoc, updateDoc, increment, query, orderBy, Timestamp, getDoc, where } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
     import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyCzi6OehJGWJwKoaFcYbdIfC7PZrK3er8c", authDomain: "pukklong-cost-a10b8.firebaseapp.com", projectId: "pukklong-cost-a10b8" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCzi6OehJGWJwKoaFcYbdIfC7PZrK3er8c",
+      authDomain: "pukklong-cost-a10b8.firebaseapp.com",
+      projectId: "pukklong-cost-a10b8", 
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
@@ -166,12 +247,12 @@
     const ADMIN_EMAIL = "pukklong.snackbox@gmail.com";
 
     let currentUser = null, isAdmin = false;
-    window.materials = []; window.currentRecipe = [];
+    let products = [], materials = [], cart = [], currentRecipe = [], currentBillType = 'receipt';
 
-    // --- AUTH ---
+    // --- AUTH LOGIC ---
     window.loginWithGoogle = () => signInWithPopup(auth, provider);
     window.logout = () => signOut(auth).then(()=>location.reload());
-    
+
     onAuthStateChanged(auth, async (user) => {
         if(user) {
             currentUser = user; isAdmin = (user.email === ADMIN_EMAIL);
@@ -181,155 +262,284 @@
             document.getElementById('userName').innerText = user.displayName;
             if(isAdmin) {
                 document.getElementById('roleBadge').style.display = 'inline-block';
-                document.getElementById('mat-form').style.display = 'flex';
-                document.getElementById('matAdminTh').style.display = 'table-cell';
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             }
-            fetchMaterials();
+            loadAllData();
         }
     });
 
-    window.goHome = () => {
-        document.getElementById('dashboard-view').classList.remove('hidden');
-        document.getElementById('pos-view').classList.add('hidden');
-        document.getElementById('cost-view').classList.add('hidden');
-    };
-    window.openSystem = (sys) => {
-        document.getElementById('dashboard-view').classList.add('hidden');
-        if(sys === 'pos') document.getElementById('pos-view').classList.remove('hidden');
-        else { document.getElementById('cost-view').classList.remove('hidden'); fetchMaterials(); }
-    };
-
-    // --- MATERIAL MGMT ---
-    async function fetchMaterials() {
-        const snap = await getDocs(collection(db, "global_cost_stock"));
-        window.materials = [];
-        let h = '', sel = '<option value="">--เลือก--</option>', count = 1;
-        snap.forEach(d => {
-            let m = {id:d.id, ...d.data()}; window.materials.push(m);
-            let avg = (m.price / m.qty).toFixed(2);
-            h += `<tr>
-                <td>${count++}</td>
-                <td><b>${m.name}</b></td>
-                <td>${m.price} บ. / ${m.qty} ${m.unit}</td>
-                <td style="color:#795548">${avg} / ${m.unit}</td>
-                ${isAdmin ? `<td>
-                    <button onclick="editMat('${m.id}')" class="btn-edit"><i class="fas fa-edit"></i></button>
-                    <button onclick="delMat('${m.id}')" class="btn-del"><i class="fas fa-trash"></i></button>
-                </td>` : ''}
-            </tr>`;
-            sel += `<option value="${m.id}">${m.name} (${avg}/${m.unit})</option>`;
-        });
-        document.getElementById('matTable').innerHTML = h;
-        document.getElementById('selectMat').innerHTML = sel;
+    async function loadAllData() {
+        await Promise.all([fetchProducts(), fetchMaterials(), fetchInventory(), fetchSalesHistory()]);
     }
 
-    window.saveMaterial = async () => {
-        let id=document.getElementById('matId').value, n=document.getElementById('matName').value, p=Number(document.getElementById('matPrice').value), q=Number(document.getElementById('matQty').value), u=document.getElementById('matUnit').value;
-        if(n && p && q) {
-            let data = { name:n, price:p, qty:q, unit:u };
-            if(id) await updateDoc(doc(db, "global_cost_stock", id), data);
-            else await addDoc(collection(db, "global_cost_stock"), data);
-            document.getElementById('matId').value=''; document.getElementById('matName').value=''; document.getElementById('matPrice').value=''; document.getElementById('matQty').value='';
-            fetchMaterials();
-        }
+    // --- NAVIGATION ---
+    window.switchView = (view, el) => {
+        document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
+        document.getElementById(`view-${view}`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        if(view === 'reports') renderReports();
     };
-    window.editMat = (id) => {
-        let m = window.materials.find(x=>x.id==id);
-        document.getElementById('matId').value=m.id; document.getElementById('matName').value=m.name; document.getElementById('matPrice').value=m.price; document.getElementById('matQty').value=m.qty; document.getElementById('matUnit').value=m.unit;
-    };
-    window.delMat = async(id) => { if(confirm('ลบวัตถุดิบนี้?')) { await deleteDoc(doc(db,"global_cost_stock",id)); fetchMaterials(); }};
 
-    // --- RECIPE MIXING ---
-    window.addToRecipe = () => {
-        let id = document.getElementById('selectMat').value, use = Number(document.getElementById('useQty').value);
-        if(id && use) {
-            let m = window.materials.find(x=>x.id==id);
-            let cost = (m.price/m.qty) * use;
-            window.currentRecipe.push({ name:m.name, use:use, unit:m.unit, cost:cost, buyPrice:m.price, buyQty:m.qty });
-            renderRecipe(); document.getElementById('useQty').value='';
-        }
-    };
-    function renderRecipe() {
-        let h = '', t = 0;
-        window.currentRecipe.forEach((r,i) => {
-            t += r.cost;
-            h += `<tr><td>${r.name}</td><td>${r.use} ${r.unit}</td><td>${r.cost.toFixed(2)}</td><td><button onclick="window.currentRecipe.splice(${i},1);renderRecipe()" class="btn-del">x</button></td></tr>`;
-        });
-        document.getElementById('recipeTable').innerHTML = h;
-        document.getElementById('currentTotal').innerText = t.toFixed(2);
+    // --- POS LOGIC ---
+    async function fetchProducts() {
+        const snap = await getDocs(collection(db, "products"));
+        products = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        renderPOS();
+        renderAdminProducts();
     }
 
-    window.saveRecipe = async () => {
-        let n=document.getElementById('recipeName').value, y=document.getElementById('yield').value, t=Number(document.getElementById('currentTotal').innerText);
-        if(n && window.currentRecipe.length) {
-            await addDoc(collection(db, "saved_recipes"), { name:n, yield:y, items:window.currentRecipe, total:t, date:Timestamp.now() });
-            alert("บันทึกสำเร็จ"); window.currentRecipe=[]; renderRecipe(); 
-            document.getElementById('recipeName').value=''; document.getElementById('yield').value='';
-            fetchSavedRecipes(); openCalcTab('saved');
-        }
-    };
-
-    // --- DETAILED HISTORY MGMT (MATCH IMAGE) ---
-    window.fetchSavedRecipes = async () => {
-        const q = query(collection(db, "saved_recipes"), orderBy("date", "desc"));
-        const snap = await getDocs(q);
+    window.renderPOS = () => {
+        const search = document.getElementById('posSearch').value.toLowerCase();
         let h = '';
-        snap.forEach(d => {
-            let r = d.data();
-            let date = r.date.toDate().toLocaleString('th-TH', {day:'numeric', month:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit'});
-            let itemsHtml = '';
-            r.items.forEach(it => {
-                itemsHtml += `
-                <div class="ing-detail-row">
-                    <b>${it.name} ใช้ ${it.use} ${it.unit} (${it.cost.toFixed(2)} บ.)</b>
-                    <span class="ing-sub-text">สต็อก: ซื้อ ${it.buyPrice} บ. / ${it.buyQty} ${it.unit}</span>
-                </div>`;
+        products.filter(p => p.name.toLowerCase().includes(search)).forEach(p => {
+            h += `<div class="product-card" onclick="addToCart('${p.id}')">
+                <div class="stock-tag">สต็อก: ${p.stock}</div>
+                <img src="${p.img || 'https://via.placeholder.com/150'}" class="product-img">
+                <div style="padding:10px; text-align:center;"><b>${p.name}</b><br><span style="color:var(--primary);">${p.price} บ.</span></div>
+            </div>`;
+        });
+        document.getElementById('posGrid').innerHTML = h;
+    };
+
+    window.addToCart = (id) => {
+        const p = products.find(x => x.id === id);
+        const item = cart.find(x => x.id === id);
+        if(item) {
+            if(item.qty < p.stock) item.qty++;
+            else alert('สินค้าในสต็อกไม่พอ');
+        } else {
+            if(p.stock > 0) cart.push({...p, qty: 1});
+            else alert('สินค้าหมด');
+        }
+        renderCart();
+    };
+
+    function renderCart() {
+        let h = '', total = 0;
+        cart.forEach((c, i) => {
+            let sum = c.price * c.qty;
+            total += sum;
+            h += `<div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <div><b>${c.name}</b><br><small>${c.price} x ${c.qty}</small></div>
+                <div>${sum.toFixed(2)} <span onclick="removeFromCart(${i})" style="color:red; cursor:pointer;">&times;</span></div>
+            </div>`;
+        });
+        document.getElementById('cartItems').innerHTML = h || '<p style="color:#999; text-align:center;">ตะกร้าว่างเปล่า</p>';
+        document.getElementById('cartTotal').innerText = total.toFixed(2);
+    }
+
+    window.removeFromCart = (i) => { cart.splice(i, 1); renderCart(); };
+    window.clearCart = () => { cart = []; renderCart(); };
+
+    // --- CHECKOUT & BILLING ---
+    window.openCheckout = (type) => {
+        if(!cart.length) return alert('กรุณาเลือกสินค้า');
+        currentBillType = type;
+        document.getElementById('billHeader').innerText = type === 'receipt' ? 'ใบเสร็จรับเงิน' : 'ใบเสนอราคา';
+        document.getElementById('billNo').innerText = (type === 'receipt' ? 'REC-' : 'QUO-') + Date.now().toString().slice(-6);
+        document.getElementById('billDate').innerText = new Date().toLocaleString('th-TH');
+        
+        let h = '', total = 0;
+        cart.forEach(c => {
+            let sum = c.price * c.qty;
+            total += sum;
+            h += `<tr><td>${c.name}</td><td align="right">${c.qty}</td><td align="right">${c.price}</td><td align="right">${sum.toFixed(2)}</td></tr>`;
+        });
+        document.getElementById('billItems').innerHTML = h;
+        document.getElementById('billGrandTotal').innerText = total.toFixed(2);
+        document.getElementById('checkoutModal').style.display = 'block';
+    };
+
+    window.confirmTransaction = async () => {
+        const total = parseFloat(document.getElementById('billGrandTotal').innerText);
+        const billNo = document.getElementById('billNo').innerText;
+        const custName = document.getElementById('billCustName').value;
+        const custAddr = document.getElementById('billCustAddr').value;
+
+        try {
+            // บันทึกลง Database
+            await addDoc(collection(db, "sales"), {
+                billNo, type: currentBillType, items: cart, total, 
+                customer: { name: custName, addr: custAddr },
+                date: Timestamp.now(), status: 'active'
             });
 
-            h += `<tr>
-                <td style="color:#666; font-size:0.85em;">${date}</td>
-                <td><b>${r.name}</b> <br> <span class="yield-badge">ทำได้: ${r.yield || '-'}</span></td>
-                <td>${itemsHtml}</td>
-                <td>
-                    <div class="cost-summary-box">
-                        <small style="color:#666;">ทุนรวมปัจจุบัน</small>
-                        <b style="color:var(--green); font-size:1.2em;">${r.total.toFixed(2)}</b>
-                        <small style="color:#C62828;">เฉลี่ย: ${(r.total/(r.yield||1)).toFixed(2)}</small>
-                    </div>
-                </td>
-                <td align="center">
-                    ${isAdmin ? `
-                        <button onclick="editRecipeHistory('${d.id}')" class="btn-edit"><i class="fas fa-edit"></i></button><br>
-                        <button onclick="delRecipeHistory('${d.id}')" class="btn-del"><i class="fas fa-trash"></i></button>
-                    ` : '-'}
-                </td>
-            </tr>`;
-        });
-        document.getElementById('historyDetailedTable').innerHTML = h || '<tr><td colspan="5" align="center">ยังไม่มีข้อมูล</td></tr>';
+            // ถ้าเป็นใบเสร็จ ให้ตัดสต็อกจริง
+            if(currentBillType === 'receipt') {
+                for(let item of cart) {
+                    await updateDoc(doc(db, "products", item.id), { stock: increment(-item.qty) });
+                }
+            }
+
+            window.print();
+            alert("ดำเนินการสำเร็จ");
+            cart = []; renderCart(); loadAllData();
+            document.getElementById('checkoutModal').style.display = 'none';
+        } catch(e) { console.error(e); }
     };
 
-    window.delRecipeHistory = async (id) => { if(confirm('ลบประวัตินี้?')) { await deleteDoc(doc(db,"saved_recipes",id)); fetchSavedRecipes(); }};
+    // --- COST CALCULATOR LOGIC ---
+    async function fetchMaterials() {
+        const snap = await getDocs(collection(db, "global_cost_stock"));
+        materials = snap.docs.map(d => ({id: d.id, ...d.data()}));
+        let h = '', sel = '<option value="">--เลือกวัตถุดิบ--</option>', i = 1;
+        materials.forEach(m => {
+            let avg = (m.price/m.qty).toFixed(4);
+            h += `<tr><td>${i++}</td><td>${m.name}</td><td>${m.price}/${m.qty}</td><td>${avg}</td>
+                <td><i class="fas fa-edit btn-edit" onclick="editCostMat('${m.id}')"></i><i class="fas fa-trash btn-del" onclick="delCostMat('${m.id}')"></i></td></tr>`;
+            sel += `<option value="${m.id}">${m.name} (${avg}/${m.unit})</option>`;
+        });
+        document.getElementById('costMatTable').innerHTML = h;
+        document.getElementById('selectRecipeMat').innerHTML = sel;
+    }
 
-    window.editRecipeHistory = async (id) => {
-        const snap = await getDoc(doc(db, "saved_recipes", id));
-        if(snap.exists()){
-            let r = snap.data();
-            window.currentRecipe = r.items;
-            document.getElementById('recipeName').value = r.name;
-            document.getElementById('yield').value = r.yield;
-            renderRecipe();
-            openCalcTab('calc');
-            window.scrollTo(0,0);
+    window.saveCostMaterial = async () => {
+        const id = document.getElementById('costMatId').value;
+        const data = {
+            name: document.getElementById('costMatName').value,
+            price: Number(document.getElementById('costMatPrice').value),
+            qty: Number(document.getElementById('costMatQty').value),
+            unit: document.getElementById('costMatUnit').value
+        };
+        if(id) await updateDoc(doc(db, "global_cost_stock", id), data);
+        else await addDoc(collection(db, "global_cost_stock"), data);
+        document.getElementById('costMatId').value = '';
+        fetchMaterials();
+    };
+
+    window.addToRecipe = () => {
+        const id = document.getElementById('selectRecipeMat').value;
+        const use = Number(document.getElementById('recipeUseQty').value);
+        if(id && use) {
+            const m = materials.find(x => x.id === id);
+            const cost = (m.price/m.qty) * use;
+            currentRecipe.push({ name: m.name, use, unit: m.unit, cost, buyInfo: `${m.price}/${m.qty}` });
+            renderCurrentRecipe();
         }
     };
 
-    window.openCalcTab = (t) => {
-        document.querySelectorAll('.calc-tab').forEach(x=>x.classList.add('hidden'));
-        document.querySelectorAll('#cost-view .tab-btn').forEach(x=>x.classList.remove('active'));
-        if(t=='calc') document.getElementById('calc-main').classList.remove('hidden');
-        if(t=='saved') { document.getElementById('calc-saved').classList.remove('hidden'); fetchSavedRecipes(); }
-        event.target.classList.add('active');
+    function renderCurrentRecipe() {
+        let h = '', total = 0;
+        currentRecipe.forEach((r, i) => {
+            total += r.cost;
+            h += `<tr><td>${r.name}</td><td>${r.use} ${r.unit}</td><td>${r.cost.toFixed(2)}</td><td onclick="currentRecipe.splice(${i},1);renderCurrentRecipe()">&times;</td></tr>`;
+        });
+        document.getElementById('currentRecipeTable').innerHTML = h;
+        document.getElementById('recipeTotalCost').innerText = total.toFixed(2);
+    }
+
+    window.saveFinalRecipe = async () => {
+        const name = document.getElementById('recipeMenuName').value;
+        if(!name || !currentRecipe.length) return alert('กรุณาใส่ชื่อและส่วนผสม');
+        await addDoc(collection(db, "saved_recipes"), {
+            name, items: currentRecipe, yield: Number(document.getElementById('recipeYield').value),
+            total: Number(document.getElementById('recipeTotalCost').innerText), date: Timestamp.now()
+        });
+        alert('บันทึกสูตรเรียบร้อย');
+        currentRecipe = []; renderCurrentRecipe();
     };
+
+    // --- INVENTORY MGMT ---
+    async function fetchInventory() {
+        const snap = await getDocs(collection(db, "store_inventory"));
+        let h = '';
+        snap.forEach(d => {
+            let data = d.data();
+            h += `<tr><td>${data.name}</td><td>${data.qty} ${data.unit}</td>
+                <td><i class="fas fa-edit btn-edit" onclick="editInv('${d.id}')"></i><i class="fas fa-trash btn-del" onclick="delInv('${d.id}')"></i></td></tr>`;
+        });
+        document.getElementById('adminInvTable').innerHTML = h;
+    }
+
+    window.saveInventory = async () => {
+        const id = document.getElementById('invId').value;
+        const data = {
+            name: document.getElementById('invName').value,
+            qty: Number(document.getElementById('invQty').value),
+            unit: document.getElementById('invUnit').value
+        };
+        if(id) await updateDoc(doc(db, "store_inventory", id), data);
+        else await addDoc(collection(db, "store_inventory"), data);
+        document.getElementById('invId').value = '';
+        fetchInventory();
+    };
+
+    function renderAdminProducts() {
+        let h = '';
+        products.forEach(p => {
+            h += `<tr><td><img src="${p.img}" width="30"></td><td>${p.name}</td><td>${p.price}</td><td>${p.stock}</td>
+                <td><i class="fas fa-edit btn-edit" onclick="editProd('${p.id}')"></i><i class="fas fa-trash btn-del" onclick="delProd('${p.id}')"></i></td></tr>`;
+        });
+        document.getElementById('adminProdTable').innerHTML = h;
+    }
+
+    window.saveProduct = async () => {
+        const id = document.getElementById('prodId').value;
+        const data = {
+            name: document.getElementById('prodName').value,
+            price: Number(document.getElementById('prodPrice').value),
+            stock: Number(document.getElementById('prodStock').value),
+            img: document.getElementById('prodImg').value
+        };
+        if(id) await updateDoc(doc(db, "products", id), data);
+        else await setDoc(doc(db, "products", data.name), data);
+        document.getElementById('prodId').value = '';
+        fetchProducts();
+    };
+
+    // --- REPORTS ---
+    async function fetchSalesHistory() {
+        const q = query(collection(db, "sales"), orderBy("date", "desc"));
+        const snap = await getDocs(q);
+        let h = '', todayTotal = 0, todayOrders = 0, grandTotal = 0;
+        const todayStr = new Date().toLocaleDateString();
+
+        snap.forEach(d => {
+            let s = d.data();
+            let date = s.date.toDate();
+            grandTotal += s.total;
+            if(date.toLocaleDateString() === todayStr) {
+                todayTotal += s.total;
+                todayOrders++;
+            }
+
+            h += `<tr><td>${date.toLocaleString('th-TH')}</td><td>${s.billNo}</td><td>${s.total.toFixed(2)}</td><td>${s.type.toUpperCase()}</td>
+                <td><button onclick="voidSale('${d.id}')" class="btn-del" style="border:none; background:none;">ยกเลิก</button></td></tr>`;
+        });
+        document.getElementById('salesHistoryTable').innerHTML = h;
+        document.getElementById('reportTodayTotal').innerText = todayTotal.toFixed(2);
+        document.getElementById('reportTodayOrders').innerText = todayOrders;
+        document.getElementById('reportGrandTotal').innerText = grandTotal.toFixed(2);
+    }
+
+    window.voidSale = async (id) => {
+        if(confirm('ต้องการยกเลิกรายการนี้?')) {
+            await deleteDoc(doc(db, "sales", id));
+            fetchSalesHistory();
+        }
+    };
+
+    // Edit Helpers
+    window.editCostMat = (id) => {
+        let m = materials.find(x => x.id === id);
+        document.getElementById('costMatId').value = m.id;
+        document.getElementById('costMatName').value = m.name;
+        document.getElementById('costMatPrice').value = m.price;
+        document.getElementById('costMatQty').value = m.qty;
+        document.getElementById('costMatUnit').value = m.unit;
+    };
+    window.editProd = (id) => {
+        let p = products.find(x => x.id === id);
+        document.getElementById('prodId').value = p.id;
+        document.getElementById('prodName').value = p.name;
+        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodStock').value = p.stock;
+        document.getElementById('prodImg').value = p.img;
+    };
+    window.delProd = async (id) => { if(confirm('ลบสินค้านี้?')) { await deleteDoc(doc(db, "products", id)); fetchProducts(); } };
+    window.delCostMat = async (id) => { if(confirm('ลบวัตถุดิบนี้?')) { await deleteDoc(doc(db, "global_cost_stock", id)); fetchMaterials(); } };
+
 </script>
 </body>
 </html>
